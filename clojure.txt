@@ -1,1 +1,8 @@
+Clojure
 
+"strings"
+:keywords
+'symbols
+
+(reduce f coll)
+(reduce f val coll)

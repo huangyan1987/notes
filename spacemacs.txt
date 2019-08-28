@@ -1,42 +1,39 @@
+Spacemacs
 
-Sat Aug 17 12:30:14 PDT 2019
-
-Fugitive
-:Gstatus    show status
-:G          same
-g?          show keymap
-s           stage/add
-u           unstage/reset
-=           toggle show diff
-enter       open file
-o gO O      open in split/vsplit/tab
-c?          commit help
-cc          commit, create
-ca          commit ammend
-ce          commit ammend, no edit
-cw          commit ammend, only edit (reword)
+In visual mode (NO SPC):
+K      SPC m h h (lookup help)
+C-x u  show undo tree
+gt   next workspace
+gT   prev workspace
 
 
-Clojure
-"strings"
-:keywords
-'symbols
+SPC then...:
+qr     restart emacs
 
+lw     layout transient state
+lw2    create second workspace
 
-(reduce f coll)
-(reduce f val coll)
+pl     open new project in layout
 
+z      folding (no SPC needed)
+za     toggle fold
+zc     close fold 
+zo     open fold 
+zm     close folds
+zr     open folds
 
-Clojure + CIDER + Spacemacs
-Add to ~/.lein/profiles.clj
+jj   jump to char
+jJ   jump to 2 chars
+jv   jump to variable
 
-{:repl {:plugins [[cider/cider-nrepl "0.10.0-SNAPSHOT"]
-                  [refactor-nrepl "2.0.0-SNAPSHOT"]]
-        :dependencies [[alembic "0.3.2"]
-                       [org.clojure/tools.nrepl "0.2.12"]]}}
+tg   toggle golden ratio (auto max window)
+tp   toggle smartparens
+Ts   toggle safe structure parens
 
-SPC m  meta?
-,      Equivalent to SPC m
+wu   undo window change
+
+m  major mode command
+,      SPC m
 
 After pressing ,
 '      Connect to CIDER repl
@@ -62,41 +59,13 @@ rtl    refactor, threading, last  ->>
 Te     toggle enlightened mode (?)
 Tt     toggle auto-test mode
 
-"Pure" Spacemacs:
-K      SPC m h h (lookup help)
-C-x u  show undo tree
-
-z      folding (no SPC needed)
-za     toggle fold
-zc     close fold 
-zo     open fold 
-zm     close folds
-zr     open folds
-
-SPC:
-qr     restart emacs
-lw     layout transient state
-lw2    create second workspace
-pl     open new project in layout
-
-gt   next workspace
-gT   prev workspace
-
-jj   jump to char
-jJ   jump to 2 chars
-jv   jump to variable
-
-tg   toggle golden ratio (auto max window)
-tp   toggle smartparens
-Ts   toggle safe structure parens
-
-wu   undo window change
-
 Org mode
 M-<arrows>    move lines up/down/left/right
 
-"Pure" Vim:
-''     go back
-cc     change whole current line
-C      change rest of line
-K      lookup
+Clojure + CIDER + Spacemacs
+Add to ~/.lein/profiles.clj
+
+{:repl {:plugins [[cider/cider-nrepl "0.10.0-SNAPSHOT"]
+                  [refactor-nrepl "2.0.0-SNAPSHOT"]]
+        :dependencies [[alembic "0.3.2"]
+                       [org.clojure/tools.nrepl "0.2.12"]]}}
