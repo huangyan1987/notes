@@ -586,6 +586,45 @@ Join                    Ctrl-Alt-J
 Thread                  Ctrl-Alt-,
 Unthread                Ctrl-Alt-.
 
+
+(+ Clojure VSCode Calva)
+
+Coding
+Show doc            Cmd+Hover
+
+Paredit             https://calva.io/paredit/
+Chords, press Ctrl+Alt+C then press...
+Re/Load Current File & Deps     Enter // VERY IMPORTANT
+Instrument for debugging        I     // see https://calva.io/debugger/
+
+REPL
+Eval curr           Ctrl+Enter        // put cursor on wrapping parens
+Eval curr up to |   Ctrl+Alt+Enter    // very useful for threading ->
+Eval wrapping form  Shift+Ctrl+Enter
+Eval outer form     Alt+Enter         // eval top-level
+Eval outer to |     Shift+Alt+Enter   // bals parens
+Eval file to |      Ct+S+A+Enter
+
+EDITING
+Force delete        Alt+Backspace     // Overrides paredit protection
+Wrap (parens)       Ctrl+Alt+Shift+P          // S for Square [], Curlies {}, Quotes ""
+Rewrap              Ctrl+Alt+R Ctrl+Alt+P or S C Q
+Cursor next sexp    Alt+Left/Right            // will not leave list
+Drag sexp           Alt+Up/Down
+Kill back/forward   Ctrl+Backspace/Delete     // deletes from cursor within sexp
+Expand selection    Ctrl+W
+Shrink selection    Ctrl+Shift+W
+Delete sexp         Ctrl+Alt+Backspace
+Barf/Slurp forward  Ctrl+Alt+Left/Right        // moves right-side paren
+" " backward        Shift+Ctrl+Alt+Left/Right  // moves left-side paren
+Slice               Ctrl+Alt+S                 // removes enclosing parens
+Split               Ctrl+Shift+S               // [1 _ 2] => [1] [2]
+Join                Ctrl+Shift+J               // [1] _ [2] => [1 2]
+Transpose           Ctrl+Alt+T
+
+Commands to know about (but no good shortcut):
+Interrupt Running Evaluations     // stops infinite loops
+
 :Training
 http://www.4clojure.com/
 http://clojurescriptkoans.com/
