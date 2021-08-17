@@ -1,4 +1,11 @@
-"skah-lah"
+Scala: "skah-lah", "A Better Java", Java++, OO+FP on the JVM
+- Basics: https://docs.scala-lang.org/tour/basics.html
+- Cheatsheet: https://docs.scala-lang.org/cheatsheets/index.html
+
+TODO/TOREAD:
+- Twitter Scala school: http://twitter.github.io/scala_school/
+- Twitter style guide: https://twitter.github.io/effectivescala/
+- Underscore books: https://underscore.io/books/
 
 From "Programming in Scala" 4th Ed. 2019, using Scala v2.13.1
 (Latest version as of 2020 is 2.13.3)
@@ -61,6 +68,7 @@ _ is a Scala's wildcard, instead of * which is an operator (usually meaning mult
 Often used to avoid deciding on a useless variable name:
     filter(x => x > 10)
     filter(_ > 10)
+When it's repeated, it's for different params
 Or in imports to import everything: import math._
 Or in match-cases it matches everything:
     case _ => "This is the default"
@@ -95,7 +103,7 @@ for (arg <- args) println(arg)
 Tupes: are 1-based, so: tuple._1 for first
 
 Maps:
-val m = Map("a" -> "alpha", "b" -> "beta")
+val m = Map("a" -> "alpha", "b" -> "beta") // The -> syntax creates a tuple of ("a", "alpha")
 val n = m + ("c" -> "gamma?")
 
 Method calls, dot and parens sometimes optional:
@@ -152,7 +160,7 @@ Int methods:
 x abs
 x round
 x isInfinity
-x to y    == [x, y] inclusive
+x to y    == [x, y] inclusive "count *to* five"
 x until y == [x, y) exclusive
 
 Strings:
@@ -174,6 +182,18 @@ Methods: findFirstIn findAllIn findPrefixOf
 Predef:
 assert  // throws AssertionError
 require // throws IAE
+classOf // returns the class of, like T.class
+print/f/ln
+???     // throws NotImplementedError, for methods to be implemented
+
+Predef aliases:
+Class = java.lang.Class
+Function = (A) => B
+Map = collection.immutable.Map
+Set = "".Set
+String = java.lang.String
+-> = Tuple2 // helpful for the Map initializer
+
 
 Class:
 
@@ -443,3 +463,7 @@ To add Akka to project, add this to the build.sbt
 
     libraryDependencies +=
       "com.typesafe.akka" % "akka-actor_2.11" % "2.4.20"
+
+===============================================================================
+May 2021: coming back to Scala
+
