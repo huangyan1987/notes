@@ -1,6 +1,28 @@
 Java
 
-Major Version Changes/Features:
+Features, by LTS, at a glance:
+Java 11 Features (since Java 8)
+- Modules aka Project Jigsaw
+- jshell
+- var keyword (in 10)
+- private methods in interfaces
+- New Methods:
+    - Collections: Lists.of, etc.
+    - Streams: takeWhile, dropWhile, iterate
+    - Optionals: ifPresentOrElse
+    - String: isBlank(), lines(), strip(), 
+    - Files: writeString(), readString(path)
+- Run java files: $ java Foo.java
+- HttpClient (preview in 9, final in 11)
+
+Java 17 Features (since Java 11)
+- Switch Expressions: case RED -> "red";  (preview 12, final 14)
+- Multi-line strings """ (preview 13, final 15)
+- Records (preview  14, final  16)
+- Pattern-matching instanceof (preview 14, final 16) 
+- Sealed classes (preview 15)
+
+Major Version Changes/Features, by each version:
 
 Java 7 (2011):
 try-with
@@ -57,12 +79,25 @@ Hidden classes
 ZGC: Scalable low-latency GC
 Previews: sealed classes
 
+Java 16 (spring 2021)
+records
+pattern matching instanceof: if (obj instanceof String s)
+Previews: sealed classes
+
+Java 17 LTS (fall 2021)
+
+
 Possible future features: value types, 64-bit arrays, pattern matching, sealed types, better native interop, virtual threads
+
+Projects:
+Jigsaw: modules (completed)
+Valhalla: Value types
+Panama: better native iterop
+Loom: virtual threads
 
 ---
 
-Exceptions
-Top Exception types to throw:
+Top Exceptions:
 ArithmeticException
 IllegalArgumentException
 IllegalStateException
@@ -494,7 +529,7 @@ FieldType getField() {
     return result;
 }
 
-72. Don't depend on teh thread scheduler
+72. Don't depend on the thread scheduler
 Threads should not busy-wait.
 Thread.yield has no testable semantic.
 Thread priorities are the least portable features.
@@ -523,5 +558,139 @@ jstack: shows all stacks
 jconsole & jvisualvm: visual alts to cli tools
 jshell JVM REPL
 
+/*******************************************************************************/
+
+Arrays:
+int[] ints = new int[100];
+int[] digs = new int[] {1,2,3};
+
+Important Arrays methods: binarySearch fill mismatch setAll
+Parallel/Streams: parallelSetAll parallelSort stream
+Misc: compare copyOf copyOfRange equals 
 
 
+Streams, create from:
+Collection: .stream() .parallelStream()
+Array: Array.stream(T[])
+Objects: Stream.of(T...)
+Object+iterate function: Stream.iterate(object, fn)
+Random: Random.ints()
+range: IntStream.range(startInclusive, endExclusive) or rangeClosed(startInclusive, endInclusive)
+
+Back to Collection: stream.collect(Collectors.toList())
+
+Top stream methods: distinct filter flatMap map reduce forEach sum min max count sorted
+Predicates: allMatch anyMatch noneMatch
+Less used ops: concat dropWhile findAny findFirst generate peek skip takeWhile toArray
+
+String:
+Top methods: contains endsWith isBlank isEmpty length matches split startsWith strip
+Top static methods, String.format join valueOf
+Less used: concat indexOf getBytes lines repeat replace replaceAll substring trim toCharArray toUpperCase 
+
+/*******************************************************************************/
+
+Queue/Dequeue/PriorityQueue
+
+Queue: <- |||| <- 
+     first||||last
+      head||||tail
+    Exceptions:
+        add(e) remove() element() // why not just get() ???
+    boolean/nullable:
+        offer(e) poll() peek()
+
+Stack: <-> ||||
+    push(e) pop() peek()
+
+Dequeue:  <-> |||| <->
+         first||||last
+          head||||tail
+Use as a queue:
+    Insert: addLast(e) offerLast(e)
+    Remove: removeFirst() pollFirst()
+    Examine: getFirst() peekFirst()
+
+/*******************************************************************************/
+
+Collections static methods:
+binarySearch(list, key)  (list, key, comp)
+copy(listDest, listSrc)
+disjoint(coll1, coll2)
+emptyList/Map/Set/etc see EMPTY_SET EMPTY_LIST
+fill(list, o)           // replace all with o
+int frequency(coll, o)
+max(coll) (coll, comp)
+min(coll) (coll, comp)
+List<T> nCopies(n, o)   // new list
+reverse(list)           // in place
+replaceAll(list, oldVal, newVal)
+reverse(list)
+reverseOrder() (comp)       // opposite Comparator
+rotate(list, n)
+shuffle(list)
+Set singleton(o)
+List singeltonList(o)
+Map singletonMap(k,v)
+sort(list) (list, comp)
+swap(list, i, j)
+
+/*******************************************************************************/
+Collectors:
+people.stream().map.collect(Collectors...);
+
+toList()                     // most common
+toCollection(TreeSet::new)   // specify a particular collection
+summingInt(Employee::getSalary)
+partitioningBy(s -> s.getGrade() > 70) // partition is by boolean Gives Map<Boolean, List<Students>>
+groupingBy
+
+counting()      // count, equal to reducing(0L, e -> 1L, Long::sum)
+
+/*******************************************************************************/
+
+HackerRank Lessons aka TIL
+
+Array to fixed-size list:
+List<Integer> fixed = Arrays.asList(arr);
+
+Array to flexible list:
+List<Integer> flex = new ArrayList<>(Arrays.asList(arr));
+
+List to Object Array:
+T[] arr = list.toArray(new T[0]); // old java uses size instead of 0
+
+Converting arrays, like Integer[] to int[]:
+int[] dst = new int[src.length];
+Arrays.setAll(dst, i -> src[i]); // loops i through src and sets dst
+
+List<Integer> to primitive Array:
+int[] arr = list.stream().mapToInt(Integer::intValue).toArray();
+
+Print List<String>:
+System.out.println(String.join(",", list));
+
+Print List<Integer>:
+list.forEach(System.out::println);
+
+Don't compare Integers with == 
+It will work for small numbers, but fail on larger
+
+Generate subsets of a set:
+for i in 0..(1<<n)
+  for j in 0..n
+    add if (i & (1 << j) > 0)
+
+/*******************************************************************************/
+
+Reading through java.util.concurrent:
+
+Difference between "Synchronized" and "Concurrent" collections is that "Synchronized" are basically stop-the-world/mutex driven, whereas "Concurrent" are thread-safe and performant.
+
+Similarly prefer CopyOnWriteArrayList over a synchronized ArrayList when reads > writes
+
+
+# BitSet
+
+clear set flip
+cardinality: counts set bits
