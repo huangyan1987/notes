@@ -409,6 +409,9 @@ __init__(self)      # constructor
 __str__             # called on str(obj), repr for repr
 __hash__            # also override __eq__ and probably also __lt__
 
+@classmethod    methods added to the class, the first arg is 'cls'
+@staticmethod   effectively functions, no 'self' arg
+
 # More Built-ins
 
 all         true if all are true
@@ -460,4 +463,93 @@ if __name__ == '__main__':
 #!/usr/local/bin/python
 
 Set PYTHONIOENCODING to utf8 if errors
+
+###############################################################################
+
+# Hypermodern Python
+
+Following along with https://cjolowicz.github.io/posts/hypermodern-python-01-setup to learn python setup
+
+pyenv local $latest
+
+Using Poetry, which is like yarn for python: https://python-poetry.org/
+
+(While pip and pipx are like npm and npx)
+
+After that, run:
+
+poetry init --no-interaction
+
+Layout:
+.
+├── LICENSE
+├── README.md
+├── pyproject.toml
+└── src
+    └── modern_python_valba
+        └── __init__.py
+
+Notice the snake_case name, even though the package is kebab-case
+
+# __init__.py
+__version__ = "0.1.0"
+
+$ poetry install
+
+Start a REPL:
+$ poetry run python 
+
+Add dep:
+$ poetry add click
+
+Update dep:
+$ poetry update click
+
+Major version update or to just specify:
+$ poetry add click^7.0
+
+Add dev dep:
+$ poetry add --dev pytest
+
+VS Code + Poetry, start with iTerm:
+$ poetry shell
+$ code .
+Click Python in bottom left, select Recommended, which should have a long obnoxious path, like ~/Library/Caches/pypoetry/virualenvs/your-package-py3.9/bin/python
+https://www.pythoncheatsheet.org/blog/python-projects-with-poetry-and-vscode-part-2/
+
+Modules:
+    Unit testing: pytest
+    Coverage: Coverage.py pytest-cov
+    Mocking: pytest-mock
+    Python multi-version testing: nox
+    CLI: click https://click.palletsprojects.com/en/8.0.x/
+
+###############################################################################
+
+
+# Data class
+
+Similar to Lombok's @Data (and related)
+
+from dataclasses import dataclasses
+
+@dataclass
+class InventoryItem:
+    name: str
+    unit_price: float
+    quantity_in_stock: int = 0
+    ingredients: list = field(default_factory=list)
+
+    def total_cost(self) -> float:
+        return self.unit_price * quantity_in_stock
+
+
+# Typing
+
+typing.Any  for when you want to specify a type that could be anythign
+
+# Propreties
+
+Start with attributes.
+Properties are a special type of attribute that has getters, setters, and deleter defined to ensure some invariants are kept
 
