@@ -1,0 +1,461 @@
+Rust
+https://doc.rust-lang.org/book
+rustup doc
+
+# Ch 1: Getting started
+
+Update: rustup update
+
+Version: rustc --version
+rustc 1.60.0 (7737e0b5c 2022-04-04)
+
+
+println!
+! = macro
+
+Create new project:
+cargo new hello_cargo
+
+Build and run:
+cargo build
+./target/debug/hello_cargo
+
+Build and run (one step):
+cargo run
+
+Fast check if code *would* compile:
+cargo check
+
+Release:
+cargo build --release
+
+
+let x = "foo"
+let mut guess = String::new();
+
+use std::io;
+
+io::stdin()
+    .read_line(&mut guess)
+    .expect("Failed!"); // expect crashes on Err
+
+The number 0.8.3 is actually shorthand for ^0.8.3, which means any version that is at least 0.8.3 but below 0.9.0
+
+Rust packages are "crates" and are found @ https://crates.io/
+
+cargo build is smart, only pulls or compiles as necessary.
+
+Cargo.lock contains the locked versions (like locks in other pkg mgrs)
+
+Update Cargo.lock:
+cargo update
+
+Generates and opens documentation:
+cargo doc --open
+
+# Ch 3: Common programming
+
+Can shadow variable names with let
+
+        match guess.cmp(&secret) {
+            Ordering::Less => println!("Too small!"),
+            Ordering::Greater => println!("Too big!"),
+            Ordering::Equal => {
+                println!("You win!");
+                break;
+            }
+        }
+
+        let guess: u32 = match guess.trim().parse() {
+            Ok(num) => num,
+            Err(_) => continue,
+        };
+
+const for constants
+
+Integers: u8 i32 etc... and isize and usize for collections
+Floags f32 f64
+bool true false
+tupes, the unit value () is default return value
+Array: let a: [i32, 5] = [1,2,3,4,5]
+
+fn five() -> i32 {
+    5
+}
+
+fn plus_one(x: i32) -> i32 {
+    x + 1           // notice this is a default return expression
+}
+
+
+fn plus_one(x: i32) -> i32 {
+    x + 1; // WONT COMPILE b/c this is a statement
+}
+
+if number < 5 {
+    println!("condition was true");
+} else {
+    println!("condition was false");
+}
+
+loop {
+    // infinite loop
+}
+
+while COND {
+
+}
+
+for ELEM in COLL {
+
+}
+
+# Ch 4: Ownership
+
+The ownership of a variable follows the same pattern every time: assigning a value to another variable moves it. 
+
+let s = ...
+do_something(s); // ownership is passed to function
+// s is invalid here
+
+&foo // reference to foo, like a pointer. Typically passed to a method
+
+fn main() {
+    let s1 = String::from("hello");
+    let len = calculate_length(&s1);
+    println!("The length of '{}' is {}.", s1, len);
+}
+
+fn calculate_length(s: &String) -> usize {
+    s.len()
+}
+
+&mut foo // a mutable reference to foo, passed to methods that will mutate foo
+
+Only one &mut ref at a time!
+
+A reference’s scope starts from where it is introduced and continues through the last time that reference is used.
+
+The ability of the compiler to tell that a reference is no longer being used at a point before the end of the scope is called Non-Lexical Lifetimes (NLL for short).
+
+Let’s recap what we’ve discussed about references:
+1. At any given time, you can have either one mutable reference or any number of immutable references.
+2. References must always be valid.
+
+Copy trait is on types that are copied.
+
+Copy extends Clone.
+
+Copy is implicit and inexpensive (fast) bit-wise copy. Rust does not allow you to reimplement Copy.
+https://doc.rust-lang.org/std/marker/trait.Copy.html
+
+Clone is explicit and may or may not be expensive.
+Clone is more general.
+https://doc.rust-lang.org/std/clone/trait.Clone.html
+
+A slice is a kind of reference, so it does not have ownership.
+
+String literals are slices:
+
+let s = "Hello, world!";
+The type of s here is &str: it’s a slice pointing to that specific point of the binary. This is also why string literals are immutable; &str is an immutable reference.
+
+# Ch 5: Structs
+
+struct User {
+    active: bool;
+    username: String;
+    email: String;
+    sign_in_count: u64;
+}
+
+let user = User {
+    active: true,
+    username: String::from("valbaca"),
+    email: String::from("valbaca@gmail.com"),
+    sign_in_count: 100
+};
+
+let mut another_user = ...;
+another_user.email = String::from("valbaca@hotmail.com");
+
+Can shorthand if variables match field names:
+
+let user = User {
+    active,
+    username,
+    email,
+    sign_in_count
+}
+
+Struct update:
+
+let user2 = User {
+    email: String::from("valbaca@gmail.com"),
+    ..user1
+}
+
+Tuple struct:
+struct Color(i32, i32, i32);
+struct Point(i32, i32, i32);
+
+fn main() {
+    let black = Color(0, 0, 0);
+    let origin = Point(0, 0, 0);
+}
+
+Unit-like struct:
+struct AlwaysEqual;
+
+First trait:
+#[derive(Debug)]
+struct Rectangle {
+    width: u32,
+    height: u32,
+}
+
+fn main() {
+    let rect1 = Rectangle {
+        width: 30,
+        height: 50,
+    };
+
+    println!("rect1 is {:?}", rect1);
+}
+
+# Ch 6
+
+"if let" is sugar for the simple case where you only want one clause from a "match" and avoid using _
+fn main() {
+    let config_max = Some(3u8);
+    match config_max {
+        Some(max) => println!("The maximum is configured to be {}", max),
+        _ => (),
+    }
+}
+
+fn main() {
+    let config_max = Some(3u8);
+    if let Some(max) = config_max {
+        println!("The maximum is configured to be {}", max);
+    }
+}
+
+can even do "if let else"
+
+fn main() {
+    let coin = Coin::Penny;
+    let mut count = 0;
+    match coin {
+        Coin::Quarter(state) => println!("State quarter from {:?}!", state),
+        _ => count += 1,
+    }
+}
+
+let mut count = 0;
+if let Coin::Quarter(state) = coin {
+    println!("State quarter from {:?}!", state);
+} else {
+    count += 1;
+}
+
+# Ch 7: Packages, Crates, & Modules:
+
+A crate is a library or binary.
+A package is one or more crates. A package contains a Cargo.toml
+
+Cargo convention is crate binary root is src/main.rs and library root is src/lib.rs
+A package can have multiple binary crates by placing files in src/bin
+
+Create new library: cargo new --lib restaurant
+
+Modules organize and handle privacy of code
+
+mod <name> {
+}
+
+src/main.rs and src/lib.rs are crate roots, either of those files form a modlule named `crate` at the root of the crate's module structure, the module tree.
+
+Module tree paths can take two forms:
+1. An absolute path starts from a crate root by using a crate name or a literal crate.
+2. A relative path starts from the current module and uses self, super, or an identifier in the current module.
+
+"crate" is like "/" in path dirs
+"super" is like ".."
+
+items (functions, methos, structs, enums, modules, & constants) are private by default. children have access to parent's items b/c children often hide implementations.
+
+use `pub` to make public
+
+`use` is like Java's import.
+It's idiomatic to only `use` up to the module, don't include the full function so you know where the function came from:
+
+use self::front_of_house::hosting;          // idiomatic
+pub fn eat_at_restaurant() {
+    hosting::add_to_waitlist();             // obvious where fn comes from
+}
+
+Nested paths:
+use std::cmp::Ordering;
+use std::io;
+VS
+use std::{cmp::Ordering, io};
+
+
+Separating code into files:
+
+
+// file: src/lib.rs
+mod front_of_house;
+
+pub use crate::front_of_house::hosting;
+
+pub fn eat_at_restaurant() {
+    hosting::add_to_waitlist();
+    hosting::add_to_waitlist();
+    hosting::add_to_waitlist();
+}
+
+// file: src/front_of_house.rs
+pub mod hosting {
+    pub fn add_to_waitlist() {}
+}
+
+Using a semicolon after mod front_of_house rather than using a block tells Rust to load the contents of the module from another file with the same name as the module.
+
+# Ch 8: Collections
+
+- A vector `Vec` allows you to store a variable number of values next to each other.
+- A string is a collection of characters. We’ve mentioned the String type previously, but in this chapter we’ll talk about it in depth.
+- A hash map allows you to associate a value with a particular key. It’s a particular implementation of the more general data structure called a map.
+
+More collections: https://doc.rust-lang.org/std/collections/index.html
+Vec VecDeque LinkedList HashMap BTreeMap HashSet BinaryHeap
+
+## Vec
+let v: Vec<i32> = Vec::new();
+
+vec! macro:
+let v = vec![1, 2, 3];
+
+push(e): to push element e
+
+When vectors drop out of scope, its contents do too.
+
+get(i): to get at index i, returns Option 
+or use &v[i] for direct access (can crash though)
+
+Read-only iteration:
+    let v = vec![100, 32, 57];
+    for i in &v {
+        println!("{}", i);
+    }
+
+Mutable iteration:
+    let mut v = vec![100, 32, 57];
+    for i in &mut v {
+        *i += 50;
+    }
+
+To hold different types of values, use enums:
+    enum SpreadsheetCell {
+        Int(i32),
+        Float(f64),
+        Text(String),
+    }
+
+    let row = vec![
+        SpreadsheetCell::Int(3),
+        SpreadsheetCell::Text(String::from("blue")),
+        SpreadsheetCell::Float(10.12),
+    ];
+
+Vec methods: len push pop extend ::from
+
+vec![0; 5] // elem * times
+
+## Slices: &[usize]
+
+let v: &[_] = &v;
+
+(Underneath, a vec is basically a ptr, len, and cap)
+
+## Strings
+
+str: string slice, in core language, usually as &str
+String: type in std lib, growable, mutable, owned UTF-8 
+
+"asdf" // string literal
+String::from("asdf")    // String
+"asdf".to_string()      // String
+
+push_str to concat
+or s1 + &s2
+
+format!("{}-{}-{}", s1, s2, s3);
+
+Rust strings do NOT support access by index, s[0] doesn't compile
+
+Strings are UTF8, which you can look at as bytes, scalar values, and grapheme clusters ("letters"?)
+
+“नमस्ते” could be looked at as either:
+1. u8: [224, 164, 168, 224, 164, 174, 224, 164, 184, 224, 165, 141, 224, 164, 164,
+224, 165, 135]
+2. char: ['न', 'म', 'स', '्', 'त', 'े']
+3. grapheme clusters: ["न", "म", "स्", "ते"]
+
+Default for-in goes over the chars. for-in over the .bytes() for bytes
+
+## Hash Maps
+
+    use std::collections::HashMap;
+
+    let mut scores = HashMap::new();
+
+    scores.insert(String::from("Blue"), 10);
+    scores.insert(String::from("Yellow"), 50);
+
+Methods: insert 
+
+Can use keys.into_iter().zip(vals_iter).collect() to turn a paired vec of keys and a vec of vals into a hashmap. Notice that .collect() can return multiple collections, so the Hash Map type must be specified, but the key-val types can be left to be inferred:
+
+    use std::collections::HashMap;
+
+    let teams = vec![String::from("Blue"), String::from("Yellow")];
+    let initial_scores = vec![10, 50];
+
+    let mut scores: HashMap<_, _> =
+        teams.into_iter().zip(initial_scores.into_iter()).collect();
+
+Adding to a hash map moves (or copies if they have Copy trait).
+
+for (key, value) in &map {}
+
+Insert only if absent:
+        scores.entry(String::from("Yellow")).or_insert(50);
+
+Updating value based on previous value:
+    let mut map = HashMap::new();
+
+    for word in text.split_whitespace() {
+        let count = map.entry(word).or_insert(0);
+        *count += 1;
+    }
+
+SipHash is the default hashing algo
+
+# Ch 9: Error Handling
+
+Recoverable and non-recoverable errors.
+
+Uses Result<T, E> for recoverable errors and panic! for unrecoverable.
+
+panic! triggers stack unrolling, but this can be turned into a hard abort via Cargo.toml
+
+the key to reading the backtrace is to start from the top and read until you see files you wrote.
+
+Recoverable errors use Result
+    enum Result<T, E> {
+        Ok(T),
+        Err(E),
+    }
