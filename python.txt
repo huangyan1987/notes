@@ -255,7 +255,7 @@ t[0] => 's'
 
 t.count(x)
 
-# Files
+#   s
 
 ## Reading
 
@@ -548,7 +548,7 @@ class InventoryItem:
 
 typing.Any  for when you want to specify a type that could be anythign
 
-# Propreties
+# Properties
 
 Start with attributes.
 Properties are a special type of attribute that has getters, setters, and deleter defined to ensure some invariants are kept
