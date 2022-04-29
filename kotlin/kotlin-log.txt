@@ -1,0 +1,19 @@
+Log while working with kotlin:
+
+Got a Spring web service setup with Elastic Beanstalk
+
+https://stackoverflow.com/questions/60840569/aws-codepipeline-deploy-spring-boot-application-to-elastic-beanstalk
+
+https://aws.amazon.com/blogs/devops/deploying-a-spring-boot-application-on-aws-using-aws-elastic-beanstalk/
+
+Deployment goes:
+1. code stored in CodeCommit
+2. code built with CodeBuild
+3. hosted on Elastic Beanstalk
+4. CodePipeline manages steps #1-3
+
+Challenges:
+1. (easy) Getting git creds
+2. (medium) figuring out the buildspec.yml
+3. (easy) getting the service to run on the right port
+
