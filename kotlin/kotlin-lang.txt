@@ -218,6 +218,32 @@ abstract class ...
     abstract fun ...
 override fun ...
 
+interface Doer {
+    fun do(): Thing
+}
+
+class Mover : Doer {
+    override fun do() { ...move...} 
+}
+
+Single Abstract Methods (SAM) from Java are interfaces/abstract classes with one method. (They're effetively Functional)
+
+fun interface OneArg {
+    fun g(n: Int): Int
+}
+
+val oneArg = OneArg { it + 42 }
+
+Delegation is "is-a inheritence via has-a composition":
+interface AI
+class A : AI
+class B(val a: A) : AI by a // "Class B implements interface AI *by* using the `a` member object"
+
+Casting:
+
+(animal as Cat).meow()          // unsafe
+(animal as? Cat)?.meow()        // safe
+
 Idioms https://kotlinlang.org/docs/idioms.html
 
 if-not null:
@@ -248,7 +274,7 @@ val rect = Rectangle().apply {
     color = 0xFF00FF
 }
 
-try-with resources:
+AutoCloseable+use (just like Java's try-with resources):
 reader().use {reader -> ... }
 
 Generic functions:
@@ -266,6 +292,11 @@ import kotlin.random.Random as KRandom
 import java.util.Random as JRandom
 
 Operator overloading: https://kotlinlang.org/docs/operator-overloading.html
+To display all operators:
+operator fun <Ctrl-Space>
+
+Define your own infix operators:
+infix fun foo(...) {...}
 
 KDoc is the format for documentation. Dokka is the tool.
 https://kotlinlang.org/docs/kotlin-doc.html

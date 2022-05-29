@@ -1,4 +1,16 @@
 
+# Condition check
+Prereq's with require() requireNotNull() and state check with check()
+
+Logging: use MicroUtils/kotlin-logging https://github.com/MicroUtils/kotlin-logging
+Unit testing: use kotlin-test-common
+or:
+- kotlin-test
+- kotlin-test-junit
+- kotlin-test-junit5
+- junit-jupiter
+Unit test mocking: MockK https://mockk.io/
+
 # Coroutines
 
 Coroutines https://kotlinlang.org/docs/coroutines-guide.html
@@ -15,6 +27,61 @@ Then:
 - delay
 
 # Generics
+
+fun <T> gFunction(arg: T): T = arg
+
+class GClass<T>(val x: T) {
+    fun f(): T = x
+}
+
+class GMemberFunction {
+    fun <T> f(arg: T): T = arg
+}
+
+interface GInterface<T> {
+    val x: T
+    fun f(): T
+}
+
+class GImpl<T>(
+    override val x: T
+) : GInterface<T> {
+    override fun f(): T = x
+}
+
+class Concrete : GInterface<String> {
+    override val x: String
+        get() = "x"
+
+    override fun f(): String = "f()"
+
+}
+
+`reified` also lets us get around Type erasure!
+
+fun <T: Any> a(kClass: KClass<T>) {
+    println(kClass)
+}
+
+// This is the typical Java-way to handle this b/c 'T' is erased at runtime
+fun <T : Any> c(kClass: KClass<T>) = a(kClass)
+
+// using reified (also requires inline)
+// reified tells teh compiler to preserve the type information
+inline fun <reified T: Any> d() = a(T::class)
+
+// This allows `is` checks
+inline fun <reified T: Any> check(t: Any) = println(t is T)
+
+class K
+
+fun main() {
+    val kc = c(K::class)
+    val kd = d<K>()
+    check<String>("asdf")
+    check<String>(123)
+}
+
 This example also shows how lambdas work
 
 fun <E, C: MutableCollection<E>> Collection<E>.partitionTo(a: C, b: C, pred: (E) -> Boolean): Pair<C, C> {
