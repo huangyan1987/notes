@@ -1,7 +1,10 @@
-Rust
-For Documentation: rustup doc
-For "The Book": rustup doc --book
-or online: https://doc.rust-lang.org/book
+Rust https://rust-lang.org/
+Start here: https://www.rust-lang.org/learn
+"The Book": https://doc.rust-lang.org/book
+
+After you install `rustup`:
+- For Documentation: rustup doc
+- For a local copy of "The Book": rustup doc --book
 
 `rustup` is Rust's Toolchain tool. Get with https://www.rust-lang.org/learn/get-started
 `rustc` is Rust's compiler (you generally use cargo, which calls the compiler). Install rustc using rustup.
@@ -806,6 +809,7 @@ panic! is more for programming problems, not as good for invalid input.
 
 Important `use`:
 - std::env fs process
+    - std::env::var
 - std::error::Error
 
 Box<dyn Error> means "the function will return a types that implements the Error trait, but we don't have to specify what the particular return type will be
@@ -821,3 +825,8 @@ let result = do_thing(...).unwrap_or_else (|err| {...});
 
 if let Err(e) = run(...) { ... }
 ^ this throws away the result
+
+
+is_err() returns whether the Result is an error or not. Simple way to check, say if an env var is set
+
+eprintln to print to error stream
