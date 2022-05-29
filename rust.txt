@@ -1,6 +1,26 @@
 Rust
-https://doc.rust-lang.org/book
-rustup doc
+For Documentation: rustup doc
+For "The Book": rustup doc --book
+or online: https://doc.rust-lang.org/book
+
+`rustup` is Rust's Toolchain tool. Get with https://www.rust-lang.org/learn/get-started
+`rustc` is Rust's compiler (you generally use cargo, which calls the compiler). Install rustc using rustup.
+`cargo` is Rust's package manager
+    - cargo: build run test doc publish --version
+    - cargo new <proj>
+
+More References:
+- Cheatsheet: https://cheats.rs/
+- another cheatsheet: https://github.com/donbright/rust-lang-cheat-sheet
+- Are we web yet? https://www.arewewebyet.org/
+- Are we async yet? https://areweasyncyet.rs/
+    - https://tokio.rs/
+
+2022-05 my open questions:
+- &str vs String
+- traits vs attributes
+- how to structure package
+- how to give good expect msg
 
 # Ch 1: Getting started
 
@@ -8,6 +28,7 @@ Update: rustup update
 
 Version: rustc --version
 rustc 1.60.0 (7737e0b5c 2022-04-04)
+rustc 1.61.0 (fe5b13d68 2022-05-18)
 
 
 println!
@@ -45,7 +66,9 @@ Rust packages are "crates" and are found @ https://crates.io/
 
 cargo build is smart, only pulls or compiles as necessary.
 
-Cargo.lock contains the locked versions (like locks in other pkg mgrs)
+Cargo.lock contains the locked versions (like locks in other pkg mgrs).
+For binaries/applications: commit cargo.lock
+For libraries: do NOT commit cargo.lock 
 
 Update Cargo.lock:
 cargo update
@@ -74,9 +97,9 @@ Can shadow variable names with let
 const for constants
 
 Integers: u8 i32 etc... and isize and usize for collections
-Floags f32 f64
+Floats f32 f64
 bool true false
-tupes, the unit value () is default return value
+tupels, the unit value () is default return value
 Array: let a: [i32, 5] = [1,2,3,4,5]
 
 fn five() -> i32 {
@@ -84,12 +107,12 @@ fn five() -> i32 {
 }
 
 fn plus_one(x: i32) -> i32 {
-    x + 1           // notice this is a default return expression
+    x + 1           // notice this is a default return expression, no semicolon
 }
 
 
 fn plus_one(x: i32) -> i32 {
-    x + 1; // WONT COMPILE b/c this is a statement
+    x + 1; // WONT COMPILE b/c this is a statement, because it has a semicolon
 }
 
 if number < 5 {
@@ -459,3 +482,342 @@ Recoverable errors use Result
         Ok(T),
         Err(E),
     }
+
+Can use `match` for type matching:
+use std::fs::File;
+use std::io::ErrorKind;
+
+fn main() {
+    let f = File::open("hello.txt");
+
+    let f = match f {
+        Ok(file) => file,
+        Err(error) => match error.kind() {
+            ErrorKind::NotFound => match File::create("hello.txt") {
+                Ok(fc) => fc,
+                Err(e) => panic!("Problem creating the file: {:?}", e),
+            },
+            other_error => {
+                panic!("Problem opening the file: {:?}", other_error)
+            }
+        },
+    };
+}
+
+
+That's a lot of match...we can use closures instead:
+
+use std::fs::File;
+use std::io::ErrorKind;
+
+fn main() {
+    let f = File::open("hello.txt").unwrap_or_else(|error| {
+        if error.kind() == ErrorKind::NotFound {
+            File::create("hello.txt").unwrap_or_else(|error| {
+                panic!("Problem creating the file: {:?}", error);
+            })
+        } else {
+            panic!("Problem opening the file: {:?}", error);
+        }
+    });
+}
+
+Or just unwrap() or expect(msg)
+expect makes it a bit easier to find the cause
+
+OR use the ? operator, which basically eliminates boilerplate around error propogation.
+But it only works if the error type is compatible with the fn return type, i.e. Result or Option
+`main` returns (), so cannot use ? within main.
+However, you can change the return type of main to be Result<(), E> and put Ok(()) at the end
+
+TIP: if you're just actually trying to read from a file, use: fs::read_to_string("hello.txt")
+
+
+https://doc.rust-lang.org/book/ch09-03-to-panic-or-not-to-panic.html
+
+Ch 10: Generic Types, Traits, and Lifetimes
+
+fn largest<T>(list: &[T]) -> T {...}
+
+struct Point<T> {
+    x: T,
+    y: T,
+}
+
+enum Option<T> {
+    Some(T),
+    None,
+}
+
+enum Result<T, E> {
+    Ok(T),
+    Err(E),
+}
+
+// for generic methods
+
+impl <T> Point<T> {...} // have to specify twice
+
+// can also specify methods only for particular types
+
+impl Point<f32> { 
+    fn dist_from_origin(&self) -> f32 {...}
+}
+
+Rust keeps the runtime low via monomorphization. Monomorphization is the process of turning generic code into specific code by filling in the concrete types that are used when compiled.  The generic Option<T> is replaced with the specific definitions created by the compiler. 
+
+Traits: A trait defines functionality a particular type has and can share with other types. We can use traits to define shared behavior in an abstract way. We can use trait bounds to specify that a generic type can be any type that has certain behavior.
+
+Traits are similar but different to interfaces/protocols.
+
+pub trait Summary {
+    fn summarize(&self) -> String;
+}
+
+pub struct NewsArticle {...}
+
+impl Summary for NewsArticle {
+    fn summarize(&self) -> String {
+        ...
+    }
+}
+
+Can’t implement external traits on external types.
+Can provide default implementations of trait methods.
+
+Using traits as parameters in other functions:
+pub fn notify(item: &impl Summary) {
+    println!("Breaking news! {}", item.summarize());
+}
+
+Repeating `impl Summary` is tedious, so you can use Trait Bound, which is more succinct if the trait type is repeated:
+pub fn notify<T: Summary>(item: &T) {
+    println!("Breaking news! {}", item.summarize());
+}
+
+Type unions with `+`
+pub fn notify(item: &(impl Summary + Display)) {
+pub fn notify<T: Summary + Display>(item: &T) {
+
+If it's still too cluttered, can use `where`:
+fn some_function<T: Display + Clone, U: Clone + Debug>(t: &T, u: &U) -> i32 {...}
+versus
+fn some_function<T, U>(t: &T, u: &U) -> i32
+    where T: Display + Clone,
+          U: Clone + Debug
+{...}
+
+Using `impl Trait` on return types only works if it returns one type (?!)
+(Looks like this can be worked around with Box<T> at the expense runtime speed)
+
+So `longest` would actually look more like (but not exactly)
+fn largest<T: PartialOrd>(list: &[T]) -> T {...}
+
+But when we made the largest function generic, it became possible for the list parameter to have types in it that don’t implement the Copy trait.
+
+So we have to also add Copy:
+fn largest<T: PartialOrd + Copy>(list: &[T]) -> T {...}
+
+fn largest<T: PartialOrd + Copy>(list: &[T]) -> T {
+    let mut largest = list[0];
+    for &item in list {
+        if item > largest {
+            largest = item;
+        }
+    }
+    largest
+}
+
+OR
+
+fn largest<T: PartialOrd + Copy>(list: &[T]) -> &T {
+    let mut largest = &list[0];
+    for item in list {
+        if item > largest {
+            largest = &item;
+        }
+    }
+    largest
+}
+
+In dynamically typed languages, we would get an error at runtime if we called a method on a type which didn’t define the method. But Rust moves these errors to compile time so we’re forced to fix the problems before our code is even able to run.
+
+Lifetimes
+
+Every reference in Rust has a lifetime, which is the scope for which that reference is valid.
+The main aim of lifetimes is to prevent dangling references, which cause a program to reference data other than the data it’s intended to reference. 
+
+Similar to generics...functions can accept references with any lifetime by specifying a generic lifetime parameter....the names of lifetime parameters must start with an apostrophe (') and are usually all lowercase and very short, like generic types. Most people use the name 'a for the first lifetime annotation. We place lifetime parameter annotations after the & of a reference, using a space to separate the annotation from the reference’s type.
+
+&i32        // a reference
+&'a i32     // a reference with an explicit lifetime
+&'a mut i32 // a mutable reference with an explicit lifetime
+
+fn main() {
+    let string1 = String::from("abcd");
+    let string2 = "xyz";
+
+    let result = longest(string1.as_str(), string2);
+    println!("The longest string is {}", result);
+}
+
+fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
+    if x.len() > y.len() {
+        x
+    } else {
+        y
+    }
+}
+
+When returning a reference from a function, the lifetime parameter for the return type needs to match the lifetime parameter for one of the parameters. If the reference returned does not refer to one of the parameters, it must refer to a value created within this function. However, this would be a dangling reference because the value will go out of scope at the end of the function. 
+
+For structs that hold a reference:
+struct ImportantExcerpt<'a> {
+    part: &'a str,
+}
+
+Early on, there were some heuristics (lifetime elision rules) put into the compiler to handle the very straightforward cases:
+fn first_word(s: &str) -> &str {...}
+fn first_word<'a>(s: &'a str) -> &'a str {...}
+
+The compiler uses three rules to figure out the lifetimes of the references when there aren’t explicit annotations.
+1. The compiler assigns a lifetime parameter to each parameter that’s a reference.
+2. If there is exactly one input lifetime parameter, that lifetime is assigned to all output lifetime parameters
+3. If there are multiple input lifetime parameters, but one of them is &self or &mut self because this is a method, the lifetime of self is assigned to all output lifetime parameters.
+
+struct ImportantExcerpt<'a> {
+    part: &'a str,
+}
+
+impl<'a> ImportantExcerpt<'a> {
+    fn level(&self) -> i32 {
+        3
+    }
+}
+
+impl<'a> ImportantExcerpt<'a> {
+    fn announce_and_return_part(&self, announcement: &str) -> &str {
+        println!("Attention please: {}", announcement);
+        self.part
+    }
+}
+
+fn main() {
+    let novel = String::from("Call me Ishmael. Some years ago...");
+    let first_sentence = novel.split('.').next().expect("Could not find a '.'");
+    let i = ImportantExcerpt {
+        part: first_sentence,
+    };
+}
+
+Static lifetime:
+
+One special lifetime we need to discuss is 'static, which denotes that the affected reference can live for the entire duration of the program. All string literals have the 'static lifetime, which we can annotate as follows:
+
+Now, altogether!
+
+use std::fmt::Display;
+
+fn longest_with_an_announcement<'a, T>(
+    x: &'a str,
+    y: &'a str,
+    ann: T,
+) -> &'a str
+where
+    T: Display,
+{
+    println!("Announcement! {}", ann);
+    if x.len() > y.len() {
+        x
+    } else {
+        y
+    }
+}
+
+fn main() {
+    let string1 = String::from("abcd");
+    let string2 = "xyz";
+
+    let result = longest_with_an_announcement(
+        string1.as_str(),
+        string2,
+        "Today is someone's birthday!",
+    );
+    println!("The longest string is {}", result);
+}
+
+
+Likely need to review this often:
+https://doc.rust-lang.org/book/ch10-03-lifetime-syntax.html
+
+11. Writing Automated Tests
+
+Attributes (are like Annotations)
+#[test]
+fn some_test() {
+    assert!(...);
+    assert!(..., "Expected blah but got {}", actual);
+    assert_eq!(...);
+    assert_ne!(...);
+}
+
+#[test]
+#[should_panic]
+fn ensure_panics() {...}
+
+
+Consider adding the traits to make comparisons and printing better:
+#[derive(PartialEq, Debug)]
+
+
+Can also use Result<T, E> in Tests:
+#[test]
+fn it_works() -> Result<(), String> {
+    if 2 + 2 == 4 {
+        Ok(())
+    } else {
+        Err(String::from("math didn't work"))
+    }
+}
+
+By default, printing for passing tests is filtered (captured). To see it:
+$ cargo test -- --show-output
+
+To run certain test, just give the test name:
+cargot test explore # only runs tests that start with explore
+
+(Just like JUnit)
+Ignore with #[ignore]
+Run *only* ignored: cargo test -- --ignored
+Run *all*, including ignored: cargo test -- --include-ignored
+
+#[cfg(test)] is what specifies that the tests run when you do `cargo test`
+
+You can test private functions:
+use super::*;
+
+Prefer to have a small src/main.rs file which calls src/lib.rs. You then don't need to test the main.rs and can just unit-test the lib.rs
+
+Ch 12. I/O Project
+
+.clone() has a runtime cost. Generally use more optimized methods but Don't Prematurely Optimize
+
+panic! is more for programming problems, not as good for invalid input.
+
+Important `use`:
+- std::env fs process
+- std::error::Error
+
+Box<dyn Error> means "the function will return a types that implements the Error trait, but we don't have to specify what the particular return type will be
+
+`dyn` == dynamic
+
+Ok(()) is Ok returning the unit (), it's basically `void`; it's for code run for side-effects only. Just like Unit in Kotlin!
+
+Two ways of error handling:
+
+let result = do_thing(...).unwrap_or_else (|err| {...});
+^ this continues with the result
+
+if let Err(e) = run(...) { ... }
+^ this throws away the result
