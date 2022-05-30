@@ -2,6 +2,7 @@ Rust https://rust-lang.org/
 Start here: https://www.rust-lang.org/learn
 "The Book": https://doc.rust-lang.org/book
 
+Install rustup: `$ curl https://sh.rustup.rs -sSf | sh`
 After you install `rustup`:
 - For Documentation: rustup doc
 - For a local copy of "The Book": rustup doc --book
@@ -9,8 +10,8 @@ After you install `rustup`:
 `rustup` is Rust's Toolchain tool. Get with https://www.rust-lang.org/learn/get-started
 `rustc` is Rust's compiler (you generally use cargo, which calls the compiler). Install rustc using rustup.
 `cargo` is Rust's package manager
-    - cargo: build run test doc publish --version
-    - cargo new <proj>
+    - cargo new [--bin|--lib] <proj> # or init for existing dir
+    - cargo: build run test fmt doc publish --version
 
 More References:
 - Cheatsheet: https://cheats.rs/
@@ -24,6 +25,16 @@ More References:
 - traits vs attributes
 - how to structure package
 - how to give good expect msg
+
+Top Libs:
+- [serde](https://serde.rs/) for serialization
+- [Diesel](https://diesel.rs/) for ORM
+- sqlx for async sql
+- Rusoto or aws-sdk-rust for AWS
+
+--- 
+
+# My notes from "The Book"
 
 # Ch 1: Getting started
 
@@ -830,3 +841,131 @@ if let Err(e) = run(...) { ... }
 is_err() returns whether the Result is an error or not. Simple way to check, say if an env var is set
 
 eprintln to print to error stream
+
+# Ch 13 Functional Language Features
+use std::thread;
+use std::time::Duration;
+
+    thread::sleep(Duration::from_secs(2))
+
+---
+
+# Notes from C++Now 2017: Niko Matsakis "Rust: Hack Without Fear!"
+https://www.youtube.com/watch?v=lO1z-7cuRYI
+
+Ownership & Borrowed
+Type:       Ownership:          Alias?      Mutate?
+T           Owned                           Yes
+&T          Shared reference    Yes
+&mut T      Mutable reference               Yes
+
+In Rust, .clone() is always explicit (it's implied in C++)
+
+Shared references:
+"Don't break your friends toys"
+Cannot mutate shared refs. If it's shared, you cannot mutate.
+
+Mutable reference:
+After the mutable reference has been "given" you cannot mutate the original
+
+Lifetimes:
+fn first<'a>(v: &'a Vec<String>) -> &'a String {
+    return &v[0];
+}
+
+Thankfully Rust has built-in rules to simplify the lifetime syntax for simple cases
+fn first(v: &Vec<String>) -> &String {
+    return &v[0];
+}
+
+Traits:
+trait Clone {
+    fn clone(&self) -> Self;
+}
+
+The &self shows it's a method (self) that uses a reference (&self) of the object, but does NOT mutate it.
+
+Concurrency:
+Rust itself knows very little about concurrency and threads. Mostly in libraries.
+sharing + mutation + no ordering = Data races
+Ruts already handles sharing + mutation
+
+Concurrency Paradigms
+Paradigm:           Ownership?          Borrowing?
+Fork-join                               Yes
+Message passing     Yes
+Locking             Yes                 Yes
+Lock-free           Yes                 Yes
+Futures             Yes                 Yes
+
+Unsafe:
+unsafe {...}
+
+Rust changes to itself: RFC->Nightly->Beta->Stable
+
+---
+
+# Notes from Rust in ten slides 
+https://steveklabnik.github.io/rust-in-ten-slides
+
+str slices (&str) + ranges:
+let s = "hello world"; // &str is immutable; are a pointer to start & length.
+let hello = &s[..5]; // "hello"
+let world = &s[6..]; // "world"
+
+str are UTF-8 Encoded, which has variable-length encoding. Also why you cannot use s[i].
+[] is expected to always have O(1) runtime. So have to use the API to get nth byte, unicode scalar, or grapheme cluster.
+On the other hand, chars are always 4-bytes. 
+
+String is the owned mutable String. How to create one:
+- s.to_string()             // direct, idiomatic
+- String::from("literal")   // looks nicer on literals
+- s.to_owned()              // also works because `String` is the owned verison of &str
+- s.into()                  // everything that implements From implements Into
+
+&str is pointer & length
+String is pointer, length, & capacity // len() and capacity()
+
+String implements Deref<Target=str> which is why you can pass a &String to something expecting a &str and It Just Works.
+(This is part of why I was so confused with them!!)
+
+This is why you generally use &str as the input parameter type, so people can pass in either.
+If you want to be even more open, use AsRef<str> and calling s.as_ref()
+(This is like accepting ArrayList vs List vs Collection)
+
+use format! to append strings
+
+---
+
+# Notes from A Gentle Introduction to Rust:
+https://stevedonovan.github.io/rust-gentle-intro/readme.html
+
+API Ref: rustup doc [--std]
+`&` is pronounced "borrow" in Rust (or "reference to"). 
+`*` is dereference. Just like an asterisk/footnote that you follow. Or an *exploding* star.
+
+Trick: to get the type of something, give an incorrect type and have the compiler tell you:
+let foo: () = [1,2];
+         ^ wrong type. Compiler will give suggestion
+
+Tip: in the docs, hit the [-] in the top right to collapse all
+
+Iterators:
+.iter() .windows(2)
+
+`String` is like C++'s mutable string.
+System languages have static or allocated strings.
+`&str` is pronounced "string slice"
+
+Here's an analogy &str:String::&[T]:Vec<T>
+string slices (&str) are to Strings as an array is to a Vector
+slices are fixed, immutable, a pointer + length
+
+String is automatically coerced into &str as needed
+Vec is automatically coerced into array as needed
+
+s.chars()            // get chars
+s.split_whitespace() // common operation
+s.chars().filter(|ch| ! ch.is_whitespace()).collect() // collect needs to be told what type on lhs
+
+TODO CONTINUE READING: https://stevedonovan.github.io/rust-gentle-intro/2-structs-enums-lifetimes.html
