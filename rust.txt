@@ -812,6 +812,18 @@ use super::*;
 
 Prefer to have a small src/main.rs file which calls src/lib.rs. You then don't need to test the main.rs and can just unit-test the lib.rs
 
+Test template:
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_foo() {
+        assert_eq!(1,1);
+    }
+}
+
 Ch 12. I/O Project
 
 .clone() has a runtime cost. Generally use more optimized methods but Don't Prematurely Optimize
@@ -847,6 +859,86 @@ use std::thread;
 use std::time::Duration;
 
     thread::sleep(Duration::from_secs(2))
+
+
+fn add (x: u32) -> u32 { x + 1 }            // fn statement
+let add = |x: u32| -> u32 {x + 1};          // explicit closure
+let add = |x| {x + 1};                      // type inference closure
+let add = |x| x + 1;                        // single-expression closure
+
+Each closure instance has its own unique anonymous type: that is, even if two closures have the same signature, their types are still considered different. To define structs, enums, or function parameters that use closures, we use generics and trait bounds.
+
+All closures implement either Fn FnMut or FnOnce traits
+
+e.g. Fn(u32) -> u32
+
+A primary difference between closures and functions (it's in the name!) is that closures can close over values; functions cannot.
+
+Now, the different Fn traits:
+- FnOnce: consumes the variables it captures, so it must take ownership. `Once` means they can only take ownership once, so it can only be called once.
+- FnMut: can change the env b/c it mutably borrows values
+- Fn: borrows values immutably.
+
+All closures implment FnOnce. If they don't move variables, they impl FnMut. If they don't need mutable access, they impl Fn.
+
+To force the closure to take ownership of values, put `move` before the args. Mostly used when passing closure to a new thread.
+
+When specifying one of the Fn trait bounds, start with `Fn` and the compiler will tell if you need FnMut or FnOnce
+
+Rust iterators are lazy.
+.iter()
+
+Iterators implement a trait named Iterator
+
+pub trait Iterator {
+    type Item;
+    fn next(&mut self) -> Option<Self::Item>;
+}
+
+`type Item` is an associated type with the trait. This says you also need to define an Item type.
+Only one method is required to be implemented: next, which returns an Option. The Option is Some if there's a value, but it's None if it's empty/over.
+
+The values you get from `next` are immutable references. If you want an iterator take ownership and return owned values, use `into_iter` instead of `iter`; similarly, if you want mutable, use `iter_mut`
+
+filter // keeps elements where true
+
+Do things like:
+    contents
+        .lines()
+        .filter(|line| line.contains(query))
+        .collect()
+
+Zero-cost Abstractions:  using the abstraction imposes no additional runtime overhead. 
+
+
+(as stated by Bjarne Stroustrup):
+In general, C++ implementations obey the zero-overhead principle: What you don’t use, you don’t pay for. And further: What you do use, you couldn’t hand code any better.
+
+Ch 14 Cargo and crates.io
+
+https://doc.rust-lang.org/stable/cargo/reference/
+https://doc.rust-lang.org/cargo/reference/manifest.html
+
+
+/// Use three slashes for docs
+
+cargo doc [--open]
+
+Sections: Examples Panics Errors Safety
+
+running cargo test will run the code examples in your documentation as tests!
+
+//!, adds documentation to the item that contains the comments rather than adding documentation to the items following the comments. 
+We typically use these doc comments inside the crate root file (src/lib.rs by convention) or inside a module to document the crate or the module as a whole.
+
+`pub use` re-exports at top level.
+In cases where there are many nested modules, re-exporting the types at the top level with `pub use` can make a significant difference in the experience of people who use the crate.
+
+Crates need a name, description, and license.
+
+"yank" is to prevent future people from using a package. yank doesn't help if you shared secrets.
+
+NEXT: https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html
 
 ---
 
