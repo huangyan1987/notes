@@ -1,6 +1,7 @@
 Rust https://rust-lang.org/
 Start here: https://www.rust-lang.org/learn
 "The Book": https://doc.rust-lang.org/book
+Crates: https://crates.io/ or https://lib.rs/
 
 Install rustup: `$ curl https://sh.rustup.rs -sSf | sh`
 After you install `rustup`:
@@ -26,11 +27,24 @@ More References:
 - how to structure package
 - how to give good expect msg
 
-Top Libs:
+Top Libraries/Crates:
+- std:: env io net fs
+- [rand]() for random
 - [serde](https://serde.rs/) for serialization
 - [Diesel](https://diesel.rs/) for ORM
 - sqlx for async sql
-- Rusoto or aws-sdk-rust for AWS
+- Rusoto or aws-sdk-rust (?) for AWS
+- [rocket](https://rocket.rs/) for web service
+    - OR: tide, nickel, ctix-web
+- clap for CLI args
+- log for logging
+- tokio for async
+- reqwest for http client
+- warp for http server
+- hyper for low level http
+    - OR: tiny_http
+- "Fixers" for the language:
+    - thiserror for derive macro for Error trait or anyhow
 
 --- 
 
@@ -938,7 +952,97 @@ Crates need a name, description, and license.
 
 "yank" is to prevent future people from using a package. yank doesn't help if you shared secrets.
 
-NEXT: https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html
+Crates named cargo-something add the command "cargo something". See with `cargo --list`
+
+Ch 15. Smart Pointers
+
+References are indicated by & and borrow the value they point to.
+
+Smart pointers only act like pointers but also have additional metadata & capabilities, e.g. reference counting smart pointer. It enables multiple owners and when no owners remain, cleans up.
+
+References are pointers that only borrow data.
+Smart pointers own the data they point to.
+
+More smart pointers are String and Vec<T>. Usually implemented using structs. They imlement Deref and Drop traits.
+
+Deref: allows an instance to behave like a reference
+Drop: allows customizing code that's run when out of scope.
+
+Most common:
+- Box<T> for allocating values on the heap
+- Rc<T> Reference counting type that enables multiple ownership
+- Ref<T> RefMut<T>, accessed through RefCell<T>, a type that enforces the borrowing rules at runtime instead of compile time.
+
+Box<T> store data on the heap and return a pointer on the stack.
+No perf overhead (other than the allocation and deref).
+
+Use when you have:
+- a type whose size cannot be known at compile time
+- a large amount of data and need to tx ownership but don't want to copy
+- a value you want to own and only care that it implements a trait (trait object)
+
+let b = Box::new(5) // b is a Box<i32>
+
+when b goes out of scope, deallocation happens for the box (stack) and the data it points to (heap).
+
+enum List {
+    Cons(i32, Box<List>),
+    Nil,
+}
+
+let x = 1;  // x is an i32
+let y = &x; // y is an &i32
+x           // x is 1
+*y          // *y is 1, to get the value, * = dereference
+
+let x = 1;  // x is an i32
+let y = Box::new(x); // y is an Box<i32>
+x           // x is 1
+*y          // *y is 1, to get the value, * = dereference
+
+
+To be able to deref *, need to impl Deref
+
+struct MyBox<T>(T);
+
+impl<T> MyBox<T> {
+    fn new(x: T) -> MyBox<T> {
+        MyBox(x)
+    }
+}
+
+use std::ops::Deref;
+
+impl<T> Deref for MyBox<T> {
+    type Target = T;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+Rust automatically sugars *y into *(y.deref())
+Done exactly once for each *
+
+Deref coercion automatically converts between ref types at compile time.
+
+Deref trait overrides * for immutable refs
+DerefMut trait is the same for mutable refs
+
+Deref coercion in three cases:
+1. &T to &U when T: Deref<Target=U>
+2. &mut T to &mut U when T: DerefMut<Target=U>
+3. &mut T to &U when T: Deref<Target=U>
+
+#1 is the base. #2 is the same, but with mutability
+#3 allows coercing a mutable to immutable b/c it makes sense.
+The opposite doesn't.
+
+Drop: trait with `drop` method that executes when it goes out
+
+You cannot call `p.drop()` method manually.
+If you need to drop, use std::mem::drop(p)
+
+NEXT https://doc.rust-lang.org/book/ch15-04-rc.html
 
 ---
 
