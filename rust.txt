@@ -1198,6 +1198,143 @@ Mutex is Sync.
 
 Ch 17. OOP features of Rust
 
+According to the GoF def of OOP (objects+method = OOP) then Rust is OOP.
+
+Encapsulation is done via pub/private fields/methods.
+
+Rust does NOT have inheritance.
+Inheritance gives code-reuse and polymorphism.
+
+For code-reuse akin to inheritance, use default implementation methods on traits.
+
+Rust uses generics to abstract over different possible types and trait bounds to impose constraints, called "bounded parametric polymorphism"
+
+Polymorphism:
+
+Use Enums when you have a fixed set of types that are known at compile time.
+
+A trait object points to both an instance of a type as well as a table to lookup trait methods on that type at runtime.
+
+trait objects are more like objects in other languages because they combine data and behavior. Trait objects' specific purpose is to allow abstraction across common behavior.
+
+pub trait Draw {
+    fn draw(&self);
+}
+
+Box<dyn Draw> is any type inside a Box that implements Draw trait.
+
+using it:
+pub struct Screen {
+    pub components: Vec<Box<dyn Draw>>,
+                    //  ^^^ yeah!
+}
+
+
+impl Screen {
+    pub fn run(&self) {
+        for component in self.components.iter() {
+            component.draw();
+        }
+    }
+}
+
+If you're only dealing with one type (a homogeneous collection), then instead use a generic with type bounds:
+
+    pub struct Screen<T: Draw> {
+        pub components: Vec<T>,
+    }
+    impl <T> Screen<T>
+    where
+        T: Draw,
+        {
+            pub fn run(&self) {
+                for c in self.components.iter() {
+                    c.draw();
+                }
+            }
+        }
+but this restricts to lists that are all type Button OR all type TextField.
+
+But using trait objects you can have both Box<Button> and Box<TextField>
+
+pub struct Button {
+    ...
+}
+impl Draw for Button {
+    fn draw(&self) {
+        // draw a button using Button fields
+    }
+}
+
+Box<dyn Draw>
+
+The compiler generates nongeneric implementations of functions and methods for each concrete type we use in place of a generic type parameter, which allows for static dispatch (the compiler knows what method you're calling at compile time). This is opposed to dynamic dispatch, where the compiler can't tell at compile time and so it's figured at runtime.
+
+Trade-off: trait objects give you flexibility at the cost of performance. 
+
+Don't try to shoehorn OOP into Rust. Write rust in rust.
+
+Ch 18 Patterns and Matching
+
+match VAL {
+    PAT => EXPR,
+    PAT => EXPR,
+}
+
+_ for match anything
+
+if let for single match. There's also while let
+if let Ok(age) = age // new age variable that shadows
+
+`let` pattern matches! fn parameters also do pattern matching.
+
+patterns can be refutable and irrefutable.
+If it will always work, it's irrefutable.
+Don't need to worry about it but know the terms to read error messages.
+
+Use `|` for multiple:
+
+match x {
+    1 | 2 => println!("one or two"),
+    3 => println!("three"),
+    _ => println!("other numbers"),
+}
+
+Ranges 1..5 and 1..=4 are the same as 1 | 2 | 3 | 4
+
+DeSTRUCTuring
+
+let p = Point {x: 0, y: 100};
+let Point {x: a, y: b} = p;
+// now use a and b
+
+Enums:
+match msg {
+    Message::Quit => {...},
+    Message::move => {...},
+}
+
+Use _ to ignore values and .. to ignore remaining values
+
+let {x: a, ..} = five_dimensional_chess_coord;
+
+Match guard, add `if` checks:
+
+match num {
+    Some(x) if x % 2 == 0 => {...},
+    Some(x) => {...}
+}
+
+@ lets you test a variable and bind it
+
+match msg {
+    Message::Hello {
+    id: id_variable @ 3..=7
+    } => {...}
+}
+
+Ch 19 Advanced Features
+
 
 
 ---
@@ -1286,6 +1423,15 @@ If you want to be even more open, use AsRef<str> and calling s.as_ref()
 (This is like accepting ArrayList vs List vs Collection)
 
 use format! to append strings
+
+---
+# Rust makes you feel like a Genius
+
+https://www.youtube.com/watch?v=0rJ94rbdteE
+
+The borrow checker has two rules:
+1. Data has one owner
+2. Data has multiple readers OR one writer
 
 ---
 
