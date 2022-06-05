@@ -1042,7 +1042,163 @@ Drop: trait with `drop` method that executes when it goes out
 You cannot call `p.drop()` method manually.
 If you need to drop, use std::mem::drop(p)
 
-NEXT https://doc.rust-lang.org/book/ch15-04-rc.html
+Rc<T> = Reference Counting
+Rc keeps track of the # of refs to a value to determine if it's in use and cleans up when zero refs remain.
+*Rc is only for single threaded*
+
+Calling Rc::clone is idiomatic b/c it only increments the Rc count; doesn't do a deep clone.
+
+Rc is immutable.
+
+*Interior mutability* is a design pattern that allows mutation of data even when there are immutable references.
+
+RefCell<T> represents single ownership of the data it holds.
+
+Recall the borrowing rules:
+- At any given time you can have *either* one mutable referene or any number of immutable references
+- References must always be valid
+
+References and Box are enforced at compile time.
+RefCell is enforced at runtime. Break the rules and you get a panic.
+
+Per the Halting Problem, cannot catch everything with analysis.
+
+Like Ref, RefCell is only for single-threaded scenarios.
+
+- Rc enables multiple owners of the same data
+    - Box and RefCell have single owners
+- Box allows immutable or mutable borrows checked at compile time
+    - Rc only allows immutable borrows checked at compile time
+    - RefCell allows immutable or mutable checked at runtime
+- RefCell allows borrows check at runtime, you can mutate the value inside the RefCell even when RefCell is immutable.
+
+Cannot borrow an immutable value immutably.
+
+ERROR:
+    let x = 5;
+    let y = &mut x;
+
+& and &mut ~=~ borrow borrow_mut
+
+borrow returns smart pointer Ref<T>
+borrow_mut returns smart pointer RefMut<T>
+
+Both Ref and RefMut implement Deref. So can treat the like regular refs
+Again, taking more than one RefMut (mutable ref) will panic!
+
+RefCell pushes the ref check safety to runtime and the borrow checker runs at runtime, but makes it possible to do mutable things you otherwise couldn't.
+
+It's common to have a Rc holding a RefCell.
+So you get multiple owners *and* can mutate.
+
+Rusts memory safety helps but doesn't totally prevent memory leaks.
+
+To prevent reference cycles (a -> b -> a), use Weak
+
+call Rc::downgrade to get a Weak<T> smart pointer. Weak increases the weak_count by 1, not the strong_count. The Rc can be cleaned up even if the weak_count is >0.
+This does mean you need to always check that the value exists.
+you call `upgrade` on a Weak to get Option<Rc<T>>
+
+For example, for a Tree node with links to parent:
+
+#[derive(Debug)]
+struct Node {
+    value: i32,
+    parent: RefCell<Weak<Node>>,
+    children: RefCell<Vec<Rc<Node>>>,
+}
+
+Notice the Weak in the parent type: RefCell<Weak<Node>>
+
+Ch 16 Fearless Concurrency
+
+Concurrent: different parts execute independently
+Parallel: different parts execute at the same time
+Ownership & type help manage memory safety and concurrency problems.
+
+to spawn a system thread:
+
+thread::spawn(|| {
+    for i in 1..10 {
+        println!("hi number {} from the spawned thread!", i);
+        thread::sleep(Duration::from_millis(1));
+    }
+})
+
+
+If the main thread ends before the spawned threads finish, they'll be exited (won't finish). There's no guarantee on the order of threads.
+thread::spawn returns a JoinHandle. It has a `join` method to wait
+
+let handle = thread::spawn(...)
+handle.join().unwrap();
+
+often `move` is used with the closure passed to thread::spawn to have the closure take ownership of the values.
+
+Message Passing to Transfer Data Between Threads
+
+from Go: "Do not communicate by sharing memory; instead, share memory by communicating."
+
+Channel has two halves: transmitter (tx) and receiver (rx). A channel is closed if either half is dropped.
+
+std::sync::mpsc
+mpsc = multiple producer, single consumer
+std channel can have multiple sending but only one receiving end.
+tx.send(...)
+rx.recv(...) // blocks; T if value, E if closed.
+rx.try_recv() // doesn't block; T if value, E if no messages at this time
+
+recv is good when you truly want to block main thread.
+try_recv is good if you can do other work.
+
+Channels are multiple producer, so create more tx with tx.clone()
+
+Shared state:
+std::sync::Mutex
+
+// single-threaded example
+let m = Mutex::new(5);
+{
+    let mut num = m.lock().unwrap();
+    *num = 6;
+}
+`lock` returns a smart pointer MutexGuard, wrapped in a LockResult. MutexGuard is a smart pointer, so it releases the lock automatically when it goes out of scope.
+
+Now for multi-threding, you need to use Arc<T> which is an Atomic Reference Counter.
+
+let counter = Arc::new(Mutex::new(0));
+let mut handles = vec![]
+for _ in 0..10 {
+    let counter = Arc::clone(&counter);
+    let handle = thread::spawn(move || {
+        let mut num = counter.lock().unwrap();
+        *num +=1 ;
+    });
+    handles.push(handle);
+}
+
+for handle in handles {
+    handle.join().unwrap();
+}
+
+Rust cannot protect you from all logical errors w/ Mutex.
+
+Two bad Rcs can memory leak; two bad Mutex can deadlock.
+
+Traits:
+A "marker trait" is one without methods.
+
+`Send` marker trait indicates that ownership of Send can be transferred between threads. Most Rust types are Send, but Rc and raw pointers are not.
+Use Rc over Arc when you're single-threaded as there's a small performance penalty for Arc.
+Any type composed of Send types is automatically Send as well.
+
+`Sync` inidicates it's safe to be referenced from multiple threads. Any type T is Sync if &T is Send.
+Primitive types are Sync and types composed entirely of Sync are Sync.
+Rc, RefCell, an Cell are not Sync.
+Mutex is Sync.
+
+Ch 17. OOP features of Rust
+
+
 
 ---
 
@@ -1165,3 +1321,15 @@ s.split_whitespace() // common operation
 s.chars().filter(|ch| ! ch.is_whitespace()).collect() // collect needs to be told what type on lhs
 
 TODO CONTINUE READING: https://stevedonovan.github.io/rust-gentle-intro/2-structs-enums-lifetimes.html
+
+--- 
+
+# Rust by Example
+
+https://doc.rust-lang.org/rust-by-example
+
+#[derive(Debug)]
+struct Thing(i32);
+
+"{:?}" debug print
+"{:#?}" pretty print
