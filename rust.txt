@@ -1335,7 +1335,216 @@ match msg {
 
 Ch 19 Advanced Features
 
+Unsafe
 
+"unsafe superpowers" include:
+- deref a raw pointer
+- call unsafe fn
+- access/modify mutable static variable
+- impl unsafe trait
+- access fields of unions
+
+unsafe doesn't turn off the borrow checker or disable Rust's safety checks.
+
+Keep unsafe blocks small.
+
+Raw pointers are written as:
+*const T
+*mut T
+
+"immutable" means teh pointer cannot be assigned to after being deref
+
+Raw pointers:
+- allowed to ignore borrowing rules by having immutable and mutable pointers or multiple mutable pointers to the same location
+- aren't guaranteed to point to valid memory
+- allowed to be null
+- don't implement any automatic cleanup
+
+let mut num = 5;
+let r1 = &num as *const i32;
+let r2 = &mut num as *mut i32;
+
+unsafe {
+    println!("r1 is {}", *r1);
+    println!("r2 is {}", *r2);
+}
+
+You can create raw pointers from safe code, but can only deref in an unsafe block.
+
+We know these pointers are valid b/c they're made from a ref `&num` but not always the case.
+
+let rand_address = 0x0123usize;
+let r = address as *const i32;
+
+FFI Foreign Function Interface
+
+extern "C" { 
+    fn abs(input: i32) -> i32;
+}
+
+fn main() {
+    unsafe {
+        println!("C abs={}", abs(-3));
+    }
+}
+
+"C" part defines which ABI (application binary interface) the foreign function uses. The ABI defines how to call at the assembly level. 
+
+To call Rust from other languages:
+
+#[no_mangle]
+pub extern "C" fn name_c_uses() {
+    println!("Just called Rust from C!");
+}
+
+// extern here implies unsafe
+
+Static (Global) variables are tricky in Rust b/c of the ownership rules.
+
+static HELLO_WORLD: &str = "hello, world";
+
+Statics have a fixed place in memory and can be mutable.
+Constants are allowed to duplicate data and are immutable.
+
+static mut COUNTER: u32 = 0;
+fn inc_count(inc: u32) {
+    unsafe {
+        COUNTER += inc;
+    }
+}
+
+fn main() {
+    inc_count(3);
+    unsafe {
+        println!("COUNTER={}", COUNTER);
+    }
+}
+
+traits can be marked unsafe
+
+access to unions has to be done unsafe, b/c the compiler cannot guarantee what data is available.
+
+*Using unsafe to use one of the five "superpowers" isn't wrong or even frowned upon. It's just trickier and requires more care. unsafe makes it easier to track down bugs.
+
+Advanced Traits
+
+"Associated types" are like placeholders
+
+pub trait Iterator {
+    type Item;
+    fn next(&mut self) -> Option<Self::Item>;
+}
+
+Why not just use generics? When using generics, we must annotate the types for each impl and specify the type when we use it.
+
+When using generic type parameters, we can sepcify a default concrete type.
+
+<PlaceholderType=ConcreteType>
+
+For example, operator overloading.
+
+https://doc.rust-lang.org/std/ops/index.html
+
+trait Add<Rhs=Self> {
+    type Output;
+    fn add(self, rhs: Rhs) -> Self::Output;
+}
+
+person.fly() is really just Type::fly(&person)
+If you need to clarify, use the latter.
+
+If it's complex, use <Dog as Animal>::baby_name()
+
+Full verbose version:
+<Type as Trait>::function(receiver_if_method, next_arg)
+
+Implement fmt::Display:
+impl fnt::Display for Point {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fm::Result {
+        write!(f, "({}, {})", self.x, self.y);
+    }
+}
+
+You're allowed to implement a trait on a type as long as either the trait or the type are local to our crate.
+To get around this, use "newtype"
+
+struct Wrapper(Vec<String>);
+
+impl fmt::Display for Wrapper {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(...) // use self.0
+    }
+}
+
+// Kotlin's delegate feature is better
+
+Type aliases:
+type new_name = old_name;
+
+Never type: !
+fn bar() -> ! {...}
+
+DST: Dynamically Sized Types or "unsized" types. Must always put values of DSTs behind a pointer of some kind.
+
+Raw `str` is a DST. Strings can be any length. Which is why we always deal with &str
+
+All generics actually rely on `Sized` trait.
+
+Function pointers:
+fn add_one(x: i32) -> i32 {
+    x + 1
+}
+
+fn do_twice(f: fn(i32) -> i32, arg: i32) -> i32 {
+    f(arg) + f(arg)
+}
+fn main() {
+    let answer = do_twice(add_one, 5);
+}
+
+Function pointers implement all Fn, FnMut, and FnOnce.
+Would want to use this when working with C, b/c C doesn't have closures.
+
+Similar to Java & Kotlin, can use fn names or closures for map
+.map(|i| i.to_string()).collect()
+.map(ToString::to_string).collect()
+
+To return a closure from a function, you cannot use a trait. Need to use Box:
+
+fn returns_closure() -> Box<dyn Fn(i32) -> i32> {
+    Box::new(|x| x + 1)
+}
+
+Macros:
+
+declarative macros with macro_rules!
+Procedural macros:
+1. Custom #[derive] macros
+2. Attribute-like macros that define custom attributes
+3. Function-like macros but operate on the tokens specified
+
+Macros generate code, can have varargs, and are expanded before compiler interprets.
+
+Simplified definition of vec! macro:
+#[macro_export]
+macro_rules! vec {
+    ( $( $x:expr ), *) => {
+        {
+            let mut temp_vec = Vec::new();
+            $(
+                temp_vec.push($x);
+            )*
+            temp_vec
+        }
+    };
+}
+
+More macro info:
+"The Little Book of Rust Macros" https://danielkeep.github.io/tlborm/book/index.html
+
+(skipping the rest b/c writing macros is niche and is usually done with the docs open)
+
+Onto the final project!
 
 ---
 
