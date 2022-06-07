@@ -1546,6 +1546,22 @@ More macro info:
 
 Onto the final project!
 
+Final Project:
+
+HTTP Request format:
+Method Request-URI HTTP-Version CRLF
+headers CRLF
+message-body
+
+HTTP Response format:
+HTTP-Version Status-Code Reason-Phrase CRLF
+headers CLRF
+message-body
+
+Weird gotcha with while let vs let: normal let drops temp vars but while let doesn't until end of block.
+
+
+
 ---
 
 # Notes from C++Now 2017: Niko Matsakis "Rust: Hack Without Fear!"
