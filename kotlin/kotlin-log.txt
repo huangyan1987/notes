@@ -29,3 +29,5 @@ All the functions and properties declared in a file app.kt inside a package org.
 
 To set a custom name to the generated Java class, use the @JvmName annotation:
 
+Maven to Gradle: https://pitcer.github.io/maven-to-gradle-kotlin-dsl/
+
