@@ -540,7 +540,7 @@ Thread priorities are the least portable features.
 Locks in class, increases bugs & security holes, extra testing.
 Extensible classes should rarely implement Serializable.
 
-/*******************************************************************************/
+---
 
 97 Things Every Java Dev...
 
@@ -558,7 +558,7 @@ jstack: shows all stacks
 jconsole & jvisualvm: visual alts to cli tools
 jshell JVM REPL
 
-/*******************************************************************************/
+---
 
 Arrays:
 int[] ints = new int[100];
@@ -588,7 +588,7 @@ Top methods: contains endsWith isBlank isEmpty length matches split startsWith s
 Top static methods, String.format join valueOf
 Less used: concat indexOf getBytes lines repeat replace replaceAll substring trim toCharArray toUpperCase 
 
-/*******************************************************************************/
+---
 
 Queue/Dequeue/PriorityQueue
 
@@ -611,7 +611,7 @@ Use as a queue:
     Remove: removeFirst() pollFirst()
     Examine: getFirst() peekFirst()
 
-/*******************************************************************************/
+---
 
 Collections static methods:
 binarySearch(list, key)  (list, key, comp)
@@ -635,7 +635,8 @@ Map singletonMap(k,v)
 sort(list) (list, comp)
 swap(list, i, j)
 
-/*******************************************************************************/
+---
+
 Collectors:
 people.stream().map.collect(Collectors...);
 
@@ -647,7 +648,7 @@ groupingBy
 
 counting()      // count, equal to reducing(0L, e -> 1L, Long::sum)
 
-/*******************************************************************************/
+---
 
 HackerRank Lessons aka TIL
 
@@ -681,7 +682,7 @@ for i in 0..(1<<n)
   for j in 0..n
     add if (i & (1 << j) > 0)
 
-/*******************************************************************************/
+---
 
 Reading through java.util.concurrent:
 
@@ -694,3 +695,172 @@ Similarly prefer CopyOnWriteArrayList over a synchronized ArrayList when reads >
 
 clear set flip
 cardinality: counts set bits
+
+---
+
+Modern (2022) Java 17
+
+[HN Thread](https://news.ycombinator.com/item?id=30841581)
+
+[Quarkus](https://quarkus.io/) Reactive microservices
+[StreamEx](https://github.com/amaembo/streamex) enchances Stream
+[OkHttp](https://square.github.io/okhttp/) http client built on [Okio](https://square.github.io/okio/)
+[jhipster](https://www.jhipster.tech/) ???
+
+---
+
+Java Cookbook notes
+
+Java-specific Software sources:
+- https://projects.apache.org/
+- https://www.eclipse.org/projects/
+- https://spring.io/projects
+- https://redhatofficial.github.io/#!/main
+
+More "general" open source:
+- https://sourceforge.net/
+- https://github.com/
+- https://gitlab.com/
+- https://search.maven.org/
+
+For x: use y  (import java.util.*; import java.util.stream.*;)
+simple tokenization: StringTokenizer
+continuous int ranges: IntStream.range(start, end) and rangeClosed(start, endInclusive)
+non-continuous int ranges: BitSet
+random: Math.random();
+    r.nextInt(10)   // for 0-9
+    1+r.nextInt(10) // for 1-10
+    nextGaussian()    // for 0.0-1.0 with "normal distribution" bell curve
+crypto random: java.security.SecureRandom
+
+
+java.util.regex (String s; String regex; Pattern p; Matcher m;)
+simple match check: s.matches(regex) or Pattern.matches(regex, s)
+
+"Pattern is a compiled representation of a regular expressiom"
+create a pattern: Pattern p = Pattern.compile(regex)
+create a matcher: Matcher m = p.matcher(s)
+use the matcher:  boolean b = m.matches()
+
+"Matcher is an engine that performs match operations on a string by interpreting a Pattern"
+
+m.match() // does the whole string match regex?
+m.find()  // does any part of the string match regex?
+
+After doing match or find, get the actual matching text groups with .group(i)
+group() or group(0) returns the whole matching part
+group(i) returns the capture group i
+OR if you need the positions of a group, use start(i) end(i)
+
+Replace matches with .replace(newString))
+
+Design Patterns: Command, Decorator, Factory method, Iterator, MVC, Proxy, Singleton
+
+Stream (sequence):
+Passing methods: distinct() filter() limit() map() peek() sorted() unsorted()
+Terminating: collect() count() findFirst() max() min() reduce() sum()
+
+I/O:
+Use new Files and Path class: java.nio.file.Files Path
+Old File class: java.io.File // consider it deprecated
+InputStream/OutputStream traditional way to read write from files
+Use Reader and Writer when dealing with text or characters (and not direct bytes)
+
+Get lines of a file: Files::lines() to get a Stream<String>
+    Files.lines(Path.of("notes.txt")).forEach(System.out::println)
+Get all lines of a file all in memory: List<String> Files.readAllLines(Path)
+Get all bytes of a file all in memory: byte[] Files.readAllBytes(Path)
+Get buffered: Files.newBufferedReader() newBufferedWriter
+
+Old way: BufferedReader is = new BufferedReader(new FileReader(fileName))
+while((line = is.readLine()) != null) {
+    println(is)
+}
+
+java.util.zip.ZipFile lets you work with zip and jar files
+
+To get files packaged within your source code, use getClass().getResource("file.txt")
+
+simple/rigid/limited....................complex/flexible/powerful
+StringTokenizer         Scanner         regex
+
+try (Scanner sc = new Scanner(s)) {
+    int dayOfMonth = sc.nextInt();
+    String month = sc.next();
+    int year = sc.nextInt();
+}
+
+Scan has "hasX" and "nextX" methods for all core types (boolean, int, float, etc) and BigInteger and BigDecimal.
+has() and hasNext() each either take a string or regex Pattern
+
+Files and Path:
+Path is a string that is potentially a Files object
+    Path p = Path.of(s);
+    Path created = Files.createFile(p);
+    OR
+    Path createdFolder = Files.createDirectory(p);
+
+Files can be renamed, moved, deleted, temp files createTempFile()
+For temp files, probably want to call tmp.toFile().deleteOnExit()
+List files: Files.list(Path.of(".")).forEach(println)
+
+java.nio.file.FileWatchService to watch for file changes
+WatchService watcher = FileSystems.getDefault().newWatchService()
+path.register(watcher, new Kind<?>[] {ENTRY_CREATE, ENTRY_MODIFY});
+while (!done) {
+    WatchKey key = watcher.take();
+    for (val e : key.pollEvents()) {
+        // e.kind() e.context()
+    }
+}
+
+Safe saving files:
+1. Create temp file to write to on the same disk, with deleteOnExit(true)
+2. Write to #1
+3. Delete backup file from #4 (if exists, first time it won't)
+4. Rename previous file to *.bak
+5. Rename temp file (from #1 & #2) to the save file.
+
+1. touch file.tmp
+2. write> file.tmp
+3. rm file.bk
+4. mv file file.bk
+5. mv file.tmp file
+
+Network Client:
+Java 11 has java.net.http.HttpClient (old stuff is in java.net, like URLConnection)
+
+HttpClient client = HttpClient.newBuilder()...
+HttpRequest req = HttpRequest.newBuilder(URI.create(url + URLEncoder.encode(keyword)))
+    .header(key, val)
+    .GET()
+    .build();
+
+// Sync
+HttpResponse<String> res = client.send(req, BodyHandlers.ofString())
+if (resp.statusCode() == 200) {
+    println(resp.body())
+}
+
+// Async
+client.sendAsync(req, BodyHandlers.ofString())
+    .thenApply(HttpResponse::body)
+    .thenAccept(println)
+    .join()
+
+TCP/IP Sockets, java.net.Socket
+try(Socket sock = new Socket("localhost", 8080)) {
+    println("connected")
+}
+
+Internet addresses: java.net.InetAddress
+InetAddress.getByName(hostname).getHostAddress()
+InetAddress.getByName(ipNumber).getHostName()
+InetAddress.getLocalHost()
+
+Inet6Address for IPv6
+
+Reading and writing text to sockets:
+new BufferedReader(new InputStreamReader(sock.getInputStream()))
+new PrintWriter(sock.getOutputStream(), /*autoflush*/ true);
+
