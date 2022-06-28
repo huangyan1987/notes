@@ -138,7 +138,7 @@ Get the context via: @Autowired, or implementing ApplicationContextAware
 @PostConstruct - method annotation, executed after bean is instantiated
 @PreDestroy - method, executed when context is beind destroyed
 
-===============================================================================
+---
 Config Sources: Property files, YAML, Env Variables, CLI args
 propertyName=propertyValue
 External configuration 
@@ -160,14 +160,14 @@ More property files can be specified using @PropertySource on the configuration 
 
 PropertySourcesPlaceholderConfigurer is the actual class that goes through and replaces ${your.key} with the real value
 
-===============================================================================
+---
 IntelliJ Shortcuts:
 Run last: Ctrl+R
 Debug last: Ctrl+D
 Run from cursor: Ctrl+Shift+R
 Debug from cursor: Ctrl+Shift+D
 
-===============================================================================
+---
 
 Testing
 
@@ -194,8 +194,44 @@ To specify properties just for testing:
 @TestPropertySource(locations = "classpath:test.properties")
 
 When running tests, TestProperties override regular Properties (as you would expect)
-===============================================================================
+---
 Boot is auto-configured and intelligently backs off
 It uses a lot of @Conditional annotations to know when to not apply autos, allows config based on conditions
 The Boot beans check if a bean of that class is already defined. If there's already one of that Class, then it backs off.
 
+---
+Spring in Action, 5th Ed, Spring 5.0
+
+$ mvn clean install spring-boot:run
+# omit clean for faster, spring-boot:start to start in background, spring-boot:stop to stop
+$ gradle bootRun
+
+Couldn't find main:
+pom.xml
+<properties>
+        <start-class>com.valbaca.tacos.TacoCloudApplication</start-class>
+</properties>
+
+To generate mvnw and mvnw.cmd: mvn -N wrapper:wrapper
+
+Unit tests are now simpler than in the book, just:
+
+import org.junit.jupiter.api.Test; // <-- IMPORTANT
+@SpringBootTest
+public MyTest {
+    @Test
+    void testThing() {...}
+}
+
+The @Test is important b/c it changed between versions from JUnit4 (org.junit.Test) and JUnit5 (org.junit.jupiter.api.Test)
+
+Dockerfile:
+FROM openjdk:8-jdk-alpine
+ENV SPRING_PROFILES_ACTIVE docker
+VOLUME /tmp
+ARG JAR_FILE
+COPY ${JAR_FILE} app.jar
+ENTRYPOINT ["java",\
+            "-Djava.security.egd=file:/dev/./urandom",\
+            "-jar",\
+            "/app.jar"]
