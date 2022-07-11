@@ -1,0 +1,61 @@
+This file has notes for more intermediate or niche Go notes EXCEPT those related to CSP (see go-csp.txt)
+These are parts of the language not always needed or are beyond "introduction" scope.
+
+# Generics
+
+func Index[T comparable](s []T, x T) int
+
+type List[T any] struct {
+	next *List[T]
+	val  T
+}
+
+# Unit Testing
+
+https://go.dev/doc/tutorial/add-a-test
+
+foo_test.go
+
+func TestHelloName(t *testing.T) {...}
+
+# Testable Examples
+
+https://go.dev/blog/examples
+
+In _test.go file, Example()
+
+func ExampleFoo()     // documents the Foo function or type
+func ExampleBar_Qux() // documents the Qux method of type Bar
+func Example()        // documents the package as a whole
+
+func init()  // run before anything else is run, after vars init'd
+
+# Sorting
+
+sort.Strings .Ints .IntsAreSorted
+
+## Custom Sorting: Len/Swap/Less
+
+type byLength []string
+
+func (s byLength) Len() int {
+    return len(s)
+}
+func (s byLength) Swap(i, j int) {
+    s[i], s[j] = s[j], s[i]
+}
+// Less is the most important for sort.Sort
+func (s byLength) Less(i, j int) bool {
+    return len(s[i]) < len(s[j])
+}
+
+func main() {
+    fruits := []string{"peach", "banana", "kiwi"}
+    sort.Sort(byLength(fruits))
+    fmt.Println(fruits)
+}
+
+
+Build tags:
+// +build prod, dev, test
+

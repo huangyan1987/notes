@@ -1,0 +1,78 @@
+This file contains notes for CSP, channels, concurrency, parallelism, async, etc. in Go
+https://en.wikipedia.org/wiki/Communicating_sequential_processes
+
+# Channels
+
+func inc(i int, c chan int) {
+    c <- i + 1 // <- is the "send" operator when a channel appears on the left.
+}
+
+c := make(chan int)
+go inc(0, c) // go is a statement that starts a new goroutine.
+go inc(10, c)
+go inc(-805, c)
+fmt.Println(<-c, <-c, <-c) // channel on right, <- is "receive" operator.
+
+ci := make(chan int)            // unbuffered channel of integers
+cj := make(chan int, 0)         // unbuffered channel of integers
+cs := make(chan *os.File, 100)  // buffered channel of pointers to Files
+
+## Channel Select
+
+// Select has syntax like a switch statement but each case involves
+// a channel operation. It selects a case at random out of the cases
+// that are ready to communicate.
+select {
+case i := <-c: // The value received can be assigned to a variable,
+    fmt.Printf("it's a %T", i)
+case <-cs: // or the value received can be discarded.
+    fmt.Println("it's a string")
+case <-ccs: // Empty channel, not ready for communication.
+    fmt.Println("didn't happen.")
+}
+
+## Timer & Ticker Channels https://pkg.go.dev/time
+
+Timer fires once (like a kitchen timer)
+Ticker repeats (like a ticking clock)
+
+timer1 := time.NewTimer(2 * time.Second) // timer1 is a channel that fires in 2s
+<-timer1.C
+fmt.Println("Timer 1 fired")
+
+ticker := time.NewTicker(500 * time.Millisecond)
+t := <-ticker.C
+
+tickers can be used for rate-limiting: https://gobyexample.com/rate-limiting
+
+## WaitGroup https://pkg.go.dev/sync#WaitGroup
+
+WaitGroup is used to "join" on channels to wait until they're complete.
+
+var wg sync.WaitGroup // Step 1. create
+
+wg.Add(1)             // Step 2. add to increment
+defer wg.Done()       // Step 3. Within go, defer the Done (decrement)
+wg.Wait()             // Step 4. Wait until done
+
+# Atomic https://pkg.go.dev/sync/atomic
+
+For incrementing shared int/unit, use "sync/atomic"
+    var ops uint64
+    atomic.AddUint64(&ops, 1) // equivalent of ops++
+
+# Mutexes https://pkg.go.dev/sync#Mutex
+
+sync.Mutex
+
+NOTE: always pass pointers to mutex; never copy a mutex
+
+type Container struct {
+    mu  sync.Mutex
+    counters map[string]int
+}
+c *Container
+
+c.mu.Lock()
+defer c.mu.Unlock()
+c.counters[name]++
