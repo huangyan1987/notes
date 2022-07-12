@@ -6,9 +6,17 @@ This file focuses on the "core" language and syntax of Go.
 - For non-core language features: see go-intermediate.txt
 - For stdlib package and other package info: see go-pkgs.txt
 
-$ go version # go version go1.18.3 darwin/arm64
-$ go mod init example/hello
-$ go run hello.go == $ go build hello.go && ./hello
+$ go version            # As of now: go version go1.18.3 darwin/arm64
+
+$ go run hello.go
+$ go build hello.go && ./hello                  # 
+$ go build -race -o binary-path package-path    # build with race condition detection
+
+$ go get package_path
+
+Modules:
+$ go mod init example/hello     # initialize new module named example/hello in pwd
+$ go mod [tidy|download|verify]
 
 package main
 
@@ -27,14 +35,12 @@ func main() {
 }
 
 # Refs
-
 https://go.dev/
 https://pkg.go.dev/
 https://gobyexample.com/
 
 
 # Slice Cheatsheet
-
 s = make([]int, 2, 4) // len of 2, cap of 4
 s = append(s, 3, 4) // append items to slice a
 a = append(a, b...) // append slice b to slice a

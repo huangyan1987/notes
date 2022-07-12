@@ -31,7 +31,55 @@ import "bufio"
 w := bufio.NewWriter(f)
 w.WriteString(s) .Flush()
 
-TODO CONTINUE @ https://gobyexample.com/file-paths
+## Filepaths path/filepath
+
+fp := filepath.Join("dir1", "dir2", "filename")
+filepath.Dir(fp) .Base(fp) .IsAbs(s) .Ext(s)
+
+## Directories
+
+os.Mkdir("dir", 0755)
+os.RemoveAll("dir")
+os.WriteFile(name, []byte(""), 0644)
+
+files, err := os.ReadDir("dir")
+for _, entry := range files {
+    fmt.Println(" ", entry.Name(), entry.IsDir())
+}
+os.Chdir("subdir")
+err = filepath.Walk("subdir", visitFn)
+
+func visit(p string, info os.FileInfo, err error) error {
+    if err != nil {
+        return err
+    }
+    fmt.Println(" ", p, info.IsDir())
+    return nil
+}
+
+https://gobyexample.com/directories
+
+## Temp files
+
+f, err := os.CreateTemp("", "sample")
+f.Name()
+f.Write([]byte{1,2,3,4})
+dname, err := os.MkdirTemp("", "sampledir")
+defer os.RemoveAll(dname)
+
+## Embed files "embed"
+
+https://gobyexample.com/embed-directive
+
+Effectively a macro that loads a file into a var
+Should be really useful for Advent of Code!
+
+import "embed"
+//go:embed folder/single_file.txt
+var fileString string // or []byte
+
+//go:embed folder/*.hash
+var folder embed.FS
 
 # Templates "text/template" and "html/template"
 
