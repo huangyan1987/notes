@@ -247,7 +247,33 @@ The rule about pointers vs. values for receivers is that value methods can be in
 
 func learnVariadicParams(myStrings ...interface{}) { ... }
 
-# Error Idioms
+# Errors
+
+New error: 
+errors.New("an error")
+fmt.Errorf("math: square root of negative number %g", x)
+
+
+## Custom errors
+
+Custom error, an "error" is any struct that satisfies:
+
+type error interface {
+    Error() string
+}
+
+For example:
+type SyntaxError struct {
+    Line int
+    Col  int
+}
+
+func (e *SyntaxError) Error() string {
+    return fmt.Sprintf("%d:%d: syntax error", e.Line, e.Col)
+}
+
+## Error Idioms
+
 
  // ", ok" idiom used to tell if something worked or not.
 m := map[int]string{3: "three", 4: "four"}
@@ -263,5 +289,5 @@ if _, err := strconv.Atoi("non-int"); err != nil { // _ discards value
     fmt.Println(err)
 }
 
-errors.New("an error")
+
 

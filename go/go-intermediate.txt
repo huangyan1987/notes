@@ -77,6 +77,112 @@ func Example()        // documents the package as a whole
 
 func init()  // run before anything else is run, after vars init'd
 
+# Command Line
+
+os.Args, usually want os.Args[1:]
+
+os.Exit(3)  // NOTE: Exit will skip defers!
+
+## Command-line flags "flag"
+
+The flags return pointers:
+
+sptr := flag.String("name", "default", "a description")
+iptr := flag.Int("answer", 42, "to the life, the universe")
+
+or you can provide a var addr:
+var svar string
+flag.StringVar(&svar, "svar", "bar", "a var")
+
+flag.Parse()    // IMPORTANT
+
+usage:
+*sptr
+*iptr
+svar
+flag.Args()     // for the non-flag args
+
+flags automatically handles generating "-h" help:
+$ ./your-bin -h
+Usage of ...
+
+Subcommands, which are like how `go` has `go get`:
+https://gobyexample.com/command-line-subcommands
+
+## Environment Variables
+
+os.Setenv("KEY", "VAL")
+os.GetEnv("KEY")
+for _, e := range os.Environ() {
+    pair := strings.SplitN(e, "=", 2)
+    fmt.Println(pair[0]) // keys
+}
+
+## Subprocesses with exec
+
+dateCmd := exec.Command("date")
+dateOutput, err := dateCmd.Output()
+_, err := exec.Command("date", "-x").Output()
+
+https://gobyexample.com/spawning-processes
+
+To spawn a subprocess and have it replace the Go program itself:
+
+syscall.Exec(binary, args, env)
+
+https://gobyexample.com/execing-processes
+
+## OS Signals (like SIGTERM)
+
+Go handles Signals via channels:
+
+    sigs := make(chan os.Signal, 1)
+    signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+
+https://gobyexample.com/signals
+
+# HTTP https://pkg.go.dev/net/http
+
+## HTTP Client
+
+resp, err := http.Get("https://go.dev")
+if err != nil {
+    panic(err)
+}
+defer resp.Body.Close()
+resp.Status
+scanner := bufio.NewScanner(resp.Body)
+for i := 0; i < 5 && scanner.Scan(); i++ {
+    fmt.Println(scanner.Text())
+}
+
+## HTTP Server
+
+Write a handler:
+func hello(w http.ResponseWriter, req *http.Request) {
+    fmt.Fprintf(w, "hello\n")
+}
+
+func main() {
+    http.HandleFunc("/hello", hello)
+    http.HandleFunc("/headers", headers)
+    http.ListenAndServe(":8080", nil)
+}
+
+// Another handler, prints out headers
+
+### Context
+
+A context.Context is created for each request by "net/http"
+
+ctx := req.Context()
+
+ctx.Done() and ctx.Err()
+
+Error page:
+http.Error(w, err.Error(), http.StatusInternalServerError)
+
+
 # Sorting
 
 sort.Strings .Ints .IntsAreSorted
