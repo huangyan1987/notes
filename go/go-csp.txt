@@ -77,6 +77,26 @@ c.mu.Lock()
 defer c.mu.Unlock()
 c.counters[name]++
 
+# Gotchas
+
+https://devs.cloudimmunity.com/gotchas-and-common-mistakes-in-go-golang
+
+If the main() path does NOT wait on goroutines to finish.
+Sender can be unblocked as soon as rx processes. This may cause the main() path to finish before the rx goroutine does.
+nil channels block forever on send & rx
+*Sending* to a closed channel causes a panic. (Rx is okay; it will return 0, false)
+
+If you kick off n-goroutines but only want one (fastest or w/e), make sure the others end.
+Don't just have them all blocking on a chan you'll never read.
+Using a select with an empty default works.
+
+    work := func(i int) { 
+        select {
+        case c <- calc(i):
+        default:
+        }
+    }
+
 
 # Notes from Videos
 
@@ -90,6 +110,8 @@ Closing a channel only marks it as *not accepting* any new values.
 Acquire sempahores when you're ready to use them.
     As in, within the goroutine. Goroutines are dirt cheap.
 Beware lexical-scoping/closure behavior within a go func. The "val i" problem from JS.
+https://go.dev/doc/faq#closures_and_goroutines
+https://devs.cloudimmunity.com/gotchas-and-common-mistakes-in-go-golang/index.html#closure_for_it_vars
 
 BROKEN!:
 for _, repo := range repos {

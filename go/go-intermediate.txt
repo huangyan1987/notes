@@ -146,15 +146,22 @@ https://gobyexample.com/signals
 ## HTTP Client
 
 resp, err := http.Get("https://go.dev")
+// https://devs.cloudimmunity.com/gotchas-and-common-mistakes-in-go-golang/index.html#close_http_resp_body
+if resp != nil {
+    defer resp.Body.Close()     
+}
+
 if err != nil {
     panic(err)
 }
-defer resp.Body.Close()
 resp.Status
 scanner := bufio.NewScanner(resp.Body)
 for i := 0; i < 5 && scanner.Scan(); i++ {
     fmt.Println(scanner.Text())
 }
+
+Be aware of closing keep-alive connections:
+https://devs.cloudimmunity.com/gotchas-and-common-mistakes-in-go-golang/index.html#close_http_conn
 
 ## HTTP Server
 
@@ -209,6 +216,24 @@ func main() {
 }
 
 
+# Equals
+
+== is good enough for structs and arrays
+If you need deep equals, use reflect.DeepEqual(a, b)
+If comparing secrets, use subtle.ConstantTimeCompare() from 'crypto/subtle'
+
+# Slice gotchas
+
+"Full slice expression"
+b := a[start:end]    // "reuses" the underlying slice, so appends to b can corrupt a!
+b := a[start:end:end-start]     // "forces" a new slice
+
+b := a[start::len(a)-start]
+b := a[:end:end]
+
+Slices are like akin to a view of an ArrayList, so highly mutable
+
 Build tags:
 // +build prod, dev, test
 
+TODO CONTINUE @ https://devs.cloudimmunity.com/gotchas-and-common-mistakes-in-go-golang/index.html#advanced_beginner

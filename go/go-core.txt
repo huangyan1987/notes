@@ -135,6 +135,7 @@ case Stringer:
 }
 
 Type assertion: t, ok := value.(typeName)
+NOTE: important to check `ok`. On a failed assertion, `t` will have zero-value
 
 # Flow control: for, defer, panic
 
@@ -143,6 +144,15 @@ for x := 0; x < 3; x++ { // ++ is a statement.
 }
 
 break continue work as expected
+
+loop:       // label, eat your heart out goto
+    for {
+        switch {
+        case true:
+            fmt.Println("I'm bustin outta here!")
+            break loop
+        }
+    }
 
 // You can use range to iterate over an array, a slice, a string, a map, or a channel.
 // range returns one (channel) or two values (array, slice, string and map).
@@ -163,10 +173,13 @@ if y := expensiveComputation(); y > x {
     x = y
 }
 
-`defer` executed after return, put on a stack
+`defer` executed after function return, put on a stack
+NOTE: args are evaluated when `defer` is evaluated; not when the defered fn is actually eval'd
+NOTE: defer is NOT executed at end of block, but at end of function
 
 panic("boom")
 
+Recover from panic using a defer-anon-fn with recover()
 defer func() {
     if r := recover(); r != nil {
         /* recover from panic */
@@ -174,7 +187,11 @@ defer func() {
 }
 mayPanic()
 
-# type struct
+https://devs.cloudimmunity.com/gotchas-and-common-mistakes-in-go-golang/index.html#panic_recover
+
+# Types
+
+## type struct
 
 type pair struct {
     x, y int
@@ -182,7 +199,20 @@ type pair struct {
 
 p := pair{3, 4}
 
-# type interface
+## type alias
+
+type myMutex sync.Mutex
+
+NOTE: non-interface type aliases cannot be used with methods for the original! 
+To do that, use a new struct type with the original as an anonymous field
+
+type myLocker struct {  
+    sync.Mutex
+}
+
+
+
+## type interface
 
 type Stringer interface {
     String() string
