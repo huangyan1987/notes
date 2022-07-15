@@ -2,9 +2,9 @@
 These notes are a re-introduction to the Go language for myself.
 
 This file focuses on the "core" language and syntax of Go.
-- For concurrency: see go-csp.txt
-- For non-core language features: see go-intermediate.txt
-- For stdlib package and other package info: see go-pkgs.txt
+- For concurrency: see [go-csp.md](go-csp.md)
+- For non-core language features: see [go-intermediate.md](go-intermediate.md) 
+- For stdlib package and other package info: see [go-pkgs.md](go-pkgs.md)
 
 $ go version            # As of now: go version go1.18.3 darwin/arm64
 
@@ -165,7 +165,7 @@ for _, name := range []string{"Bob", "Bill", "Joe"} {
     fmt.Printf("Hello, %s\n", name)
 }
 
-for <condition> {} // while loop
+for condition {} // while loop
 for {}             // infinite loop
 
 
@@ -182,7 +182,7 @@ panic("boom")
 Recover from panic using a defer-anon-fn with recover()
 defer func() {
     if r := recover(); r != nil {
-        /* recover from panic */
+        // recover from panic
     }
 }
 mayPanic()
@@ -225,9 +225,9 @@ new(T) returns a pointer to a newly allocated zero value of type T.
 
 ## Composite literal
 
-    f := File{fd, name, nil, 0} // all laid out, in order, all must be present
-    // f is type File
-    f := File{fd: fd, name: name} // with labels, you can leave zeros out
+f := File{fd, name, nil, 0} // all laid out, in order, all must be present
+// f is type File
+f := File{fd: fd, name: name} // with labels, you can leave zeros out
 
 new(File) == &File()
 
@@ -268,8 +268,8 @@ for i := range picture {
 
 Methods are funcs with a target; target can be a value or pointer.
 
-func (slice ByteSlice) Append(data []byte) []byte {...}
-func (p *ByteSlice) Write(data []byte) (n int, err error) {...}
+`func (slice ByteSlice) Append(data []byte) []byte {...}`
+`func (p *ByteSlice) Write(data []byte) (n int, err error) {...}`
 
 The rule about pointers vs. values for receivers is that value methods can be invoked on pointers and values, but pointer methods can only be invoked on pointers.
 
@@ -298,9 +298,11 @@ type SyntaxError struct {
     Col  int
 }
 
+```
 func (e *SyntaxError) Error() string {
     return fmt.Sprintf("%d:%d: syntax error", e.Line, e.Col)
 }
+```
 
 ## Error Idioms
 
@@ -314,10 +316,9 @@ if x, ok := m[1]; !ok { // ok will be false because 1 is not in the map.
 }
 
 // An error value communicates not just "ok" but more about the problem.
+```
 if _, err := strconv.Atoi("non-int"); err != nil { // _ discards value
     // prints 'strconv.ParseInt: parsing "non-int": invalid syntax'
     fmt.Println(err)
 }
-
-
-
+```

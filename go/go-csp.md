@@ -1,6 +1,8 @@
 This file contains notes for CSP, channels, concurrency, parallelism, async, etc. in Go
 https://en.wikipedia.org/wiki/Communicating_sequential_processes
 
+"Do not communicate by sharing memory; instead, share memory by communicating."
+
 # Channels
 
 func inc(i int, c chan int) {
@@ -114,21 +116,25 @@ https://go.dev/doc/faq#closures_and_goroutines
 https://devs.cloudimmunity.com/gotchas-and-common-mistakes-in-go-golang/index.html#closure_for_it_vars
 
 BROKEN!:
+```
 for _, repo := range repos {
     go func() {
         doThing(repo)       // Just like JS, this is WRONG!
     }()
 }
+```
 
 Either:
+```
 for _, repo := range repos {
     go func(repo string) { // GOOD: now the parameter `repo` shadows the loop `repo`
         doThing(repo)
     }(repo)
 }
-
+```
 Avoid mixing anon-functions and go routines. Using a named function helps.
 
+```
 for _, repo := range repos {
     go workDoThing(repo)
 }
@@ -136,6 +142,7 @@ for _, repo := range repos {
 func workDoThing(repo string) {
     doThing(repo)
 }
+```
 
 Before you `go`, know when and how it will stop.
 
@@ -150,6 +157,7 @@ Normally only close channels from the *sending* side; not the rx side
 
 Fan-out pattern (one in, multi out)
 
+```
 func Fanout(In <-chan int, OutA, OutB chan int) {
     for data := range In {  // rx until closed
         select {
@@ -158,9 +166,10 @@ func Fanout(In <-chan int, OutA, OutB chan int) {
         }
     }
 }
-
+```
 Turn out (multi in, multi out)
 
+```
 func Turnout(InA, InB <-chan int, OutA, OutB chan int) {
     // elid vars
     for {
@@ -178,6 +187,7 @@ func Turnout(InA, InB <-chan int, OutA, OutB chan int) {
         }
     }
 }
+```
 
 If you're spinning in a tight loop, call runtime.Gosched() to prevent locking up a CPU
 
@@ -215,7 +225,7 @@ on receive:
     3. release lock
 
 So no shared memory (except the hchan) and it copies, which holds true to the motto:
-"Do not communicate by sharing memory; instead, share memory by communcating."
+"Do not communicate by sharing memory; instead, share memory by communicating."
 
 goroutines are "user-space threads"
 
@@ -255,7 +265,6 @@ Unbuffered channels always do this "direct send":
 - sender first -> rx directly from the sudog
 
 CAS: Compare And Swap
-
 
 ch := make(chan Task)    // unbuffered
 

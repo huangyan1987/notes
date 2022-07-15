@@ -19,12 +19,15 @@ go test -v -bench . # benchmarks (see below)
 
 Write a function with name staring with "Test"
 
+```
 func TestFoo(t *testing.T) {
     t.Errorf("log an error %s", s)
 }
+```
 
 Using "table-driven" allows writing parameterized tests easily
 
+```
 func TestTableDriven(t *testing.T) {
     var tests = []struct {
         a, b int        // input
@@ -44,6 +47,7 @@ func TestTableDriven(t *testing.T) {
         })
     }
 }
+```
 
 
 ## Benchmark
@@ -55,11 +59,13 @@ Benchmark tests typically go in _test.go files and are named beginning with Benc
 
 foo_test.go
 
+```
 func BenchmarkIntMin(b *testing.B) {
     for i := 0; i < b.N; i++ {
         IntMin(1, 2)
     }
 }
+```
 
 
 https://go.dev/doc/tutorial/add-a-test
@@ -97,11 +103,12 @@ flag.StringVar(&svar, "svar", "bar", "a var")
 flag.Parse()    // IMPORTANT
 
 usage:
+```
 *sptr
 *iptr
 svar
 flag.Args()     // for the non-flag args
-
+```
 flags automatically handles generating "-h" help:
 $ ./your-bin -h
 Usage of ...
@@ -111,19 +118,21 @@ https://gobyexample.com/command-line-subcommands
 
 ## Environment Variables
 
+```
 os.Setenv("KEY", "VAL")
 os.GetEnv("KEY")
 for _, e := range os.Environ() {
     pair := strings.SplitN(e, "=", 2)
     fmt.Println(pair[0]) // keys
 }
-
+```
 ## Subprocesses with exec
 
+```
 dateCmd := exec.Command("date")
 dateOutput, err := dateCmd.Output()
 _, err := exec.Command("date", "-x").Output()
-
+```
 https://gobyexample.com/spawning-processes
 
 To spawn a subprocess and have it replace the Go program itself:
@@ -145,7 +154,9 @@ https://gobyexample.com/signals
 
 ## HTTP Client
 
+```
 resp, err := http.Get("https://go.dev")
+
 // https://devs.cloudimmunity.com/gotchas-and-common-mistakes-in-go-golang/index.html#close_http_resp_body
 if resp != nil {
     defer resp.Body.Close()     
@@ -159,6 +170,7 @@ scanner := bufio.NewScanner(resp.Body)
 for i := 0; i < 5 && scanner.Scan(); i++ {
     fmt.Println(scanner.Text())
 }
+```
 
 Be aware of closing keep-alive connections:
 https://devs.cloudimmunity.com/gotchas-and-common-mistakes-in-go-golang/index.html#close_http_conn
@@ -166,17 +178,19 @@ https://devs.cloudimmunity.com/gotchas-and-common-mistakes-in-go-golang/index.ht
 ## HTTP Server
 
 Write a handler:
+```
 func hello(w http.ResponseWriter, req *http.Request) {
     fmt.Fprintf(w, "hello\n")
 }
 
 func main() {
     http.HandleFunc("/hello", hello)
+    // Another handler, prints out headers
     http.HandleFunc("/headers", headers)
     http.ListenAndServe(":8080", nil)
 }
+```
 
-// Another handler, prints out headers
 
 ### Context
 
@@ -196,6 +210,7 @@ sort.Strings .Ints .IntsAreSorted
 
 ## Custom Sorting: Len/Swap/Less
 
+```
 type byLength []string
 
 func (s byLength) Len() int {
@@ -214,6 +229,7 @@ func main() {
     sort.Sort(byLength(fruits))
     fmt.Println(fruits)
 }
+```
 
 
 # Equals

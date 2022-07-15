@@ -6,7 +6,7 @@ Examples: Files, Templating, Regex, JSON, etc.
 
 # Files
 
-## Reading Files
+## Reading from files
 
 import "os" 
 dat, err := os.ReadFile(filename) // basic, slurps into memory
@@ -21,7 +21,7 @@ n, err := io.ReadAtLeast(f, buff, n)
 import "buffio" // buffered reading is faster and has more methods
 scanner := bufio.NewScanner(os.Stdin) // or any fh
 
-## Writing Files
+## Writing to files
 import "os"
 os.WriteFile(filename, data, octal)
 f, err := os.Create(filename)

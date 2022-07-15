@@ -1,5 +1,6 @@
 For random notes that don't fit anywhere else
----
+
+# Local Modules
 
 Calling other local modules: https://go.dev/doc/tutorial/call-module-code
 
