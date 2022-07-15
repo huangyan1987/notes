@@ -60,7 +60,7 @@ Te     toggle enlightened mode (?)
 Tt     toggle auto-test mode
 
 Org mode
-M-<arrows>    move lines up/down/left/right
+`M-<arrows>    move lines up/down/left/right`
 
 Clojure + CIDER + Spacemacs
 Add to ~/.lein/profiles.clj

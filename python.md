@@ -10,7 +10,7 @@ pyenv: https://github.com/pyenv/pyenv
 
 brew install pyenv
 pyenv init # MUST follow instructions! copy text to ~/.profile ~/.zprofile AND ~/.zshrc
-Then LOG OUT and back in. Just do it.
+Then LOG OUT and back in. **Just do it.**
 
 tldr pyenv              # for help
 
@@ -18,9 +18,9 @@ pyenv versions          # lists the versions installed
 pyenv install 3.9.7     # or whatever's latest
 pyenv global 3.9.7      # switch base version to this
 
-###############################################################################
+---
 
-Notes from Python Pocket Reference 5th Ed (ignoring Python 2.x entirely)
+## Python Pocket Reference 5th Ed (ignoring Python 2.x entirely)
 
 # python command
 
@@ -83,6 +83,7 @@ Can lookup others
 
 ## Slices/Sequences
 
+```
 s[i]        basic
 s[-1]       last, equiv to s[len(s)-1]
 s[1:3]      from index 1 to 3, 3-1 = 2 items
@@ -91,10 +92,12 @@ s[:-1]      all but last
 s[:]        shallow copy
 s[::2]      every other
 s[::-1]     reversed
-
+```
 Slice assignment is like delete then insert where deleted:
+```
 s[i:j]  does not need to match size
 s[i:j:k] DOES need to match size
+```
 
 # Numbers
 
@@ -165,16 +168,21 @@ right-hand: rfind rindex...
 
 Lists are mutable sequences, like ArrayLists in Java
 
+```
 []                          empty
 [1,2]                       literal
 list('spam')                ctor, creates ['s', 'p', 'a', 'm']
 [x ** 2 for x in range(9)]  list comprehension
+```
 
+```
 l.append(x)                 adds at end
 l.extend(iter)              adds all at end
 l[-1:] = xs                 also extends
 l[:0] = xs                  prepends
+```
 
+```
 l.sort(key=None, reverse=False)     in-place sort
 l.reverse()
 l.index(x)      index of x, raises if missing
@@ -184,15 +192,20 @@ l.remove(x)     removes first x, raises if not found
 del l[l.index(x)]   similar
 l.clear()       removes all
 l.copy()        shallow copy
+```
 
 ## List comprehension
 
+```
 [expr for x in xs]
 [expr for x in xs if cond]
 [xy for x in xs for y in ys]
+```
 
+```
 [x + y for x in range(0,100,10) for y in range(10)]
 list(range(100))    obviously much better
+```
 
 ## Iterable/Iterator
 
@@ -207,12 +220,12 @@ __getitem__ is used as fallback if __next__ isn't provided
 ## ALL the comprehensions
 
 List comp:
-[x * x for x in range(10)]
+`[x * x for x in range(10)]`
 => [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
 
 Generator comp (like a lazy list):
 (x * x for x in range(10))
-=> <generator object <genexpr> at 0x100eef510>
+=> `<generator object <genexpr> at 0x100eef510>`
 
 Set comp:
 {x * x for x in range(10)}
@@ -255,7 +268,7 @@ t[0] => 's'
 
 t.count(x)
 
-#   s
+# Files
 
 ## Reading
 
@@ -296,6 +309,7 @@ set('spam')
 
 ## Set operations
 
+```
 frozenset
 in          use to check presence, x in s
 - difference
@@ -310,6 +324,7 @@ add remove discard pop clear
 len(s)
 for x in s
 x.copy()
+```
 
 # bool
 
@@ -326,9 +341,10 @@ a, b
 => (0, [1, 2, 3])
 
 In short, on the "left" * collects; on the right, it expands
+```
 * collects/expands seqs
 ** collects/expands dicts
-
+```
 # Decorators
 
 @decorators         # similar to Java annotations
@@ -434,7 +450,7 @@ f(*args) instead of apply
 open instead of file
 functools.reduce instead of reduce
 
-# Modules
+# Useful Modules
 
 sys.argv exit flags path platform version_info stdin stdout
 string.ascii_letters digis punctuation whitespace
@@ -452,19 +468,21 @@ profile time timeit datetime random json enum struct sqlite3 unit test doctest
 Get more modules: https://pypi.org/
 
 # Idioms
+```
+#!/usr/bin/env python
+#!/usr/local/bin/python
+
 
 def main():
     ...
 
 if __name__ == '__main__':
     main()
-
-#!/usr/bin/env python
-#!/usr/local/bin/python
+```
 
 Set PYTHONIOENCODING to utf8 if errors
 
-###############################################################################
+---
 
 # Hypermodern Python
 
@@ -524,13 +542,14 @@ Modules:
     Python multi-version testing: nox
     CLI: click https://click.palletsprojects.com/en/8.0.x/
 
-###############################################################################
+---
 
 
-# Data class
+# Data class `@dataclass`
 
 Similar to Lombok's @Data (and related)
 
+```
 from dataclasses import dataclasses
 
 @dataclass
@@ -542,11 +561,11 @@ class InventoryItem:
 
     def total_cost(self) -> float:
         return self.unit_price * quantity_in_stock
-
+```
 
 # Typing
 
-typing.Any  for when you want to specify a type that could be anythign
+typing.Any  for when you want to specify a type that could be anything
 
 # Properties
 

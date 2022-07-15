@@ -2,6 +2,7 @@ Learning SQL Notes
 
 Basics:
 
+```
 SHOW TABLES;
 CREATE TABLE table(column_defs);
 DESC table;
@@ -12,11 +13,12 @@ SELECT a, b, c FROM table WHERE clause;
 UPDATE table SET k = v, k2 = v2 WHERE clause;
 DELETE FROM table WHERE clause;
 DROP TABLE table;
+```
 
 
+---
 
-/*****************************************************************************/
-
+```
 $ mysql -uroot -p
 > grant all privileges on *.* to 'valbaca'@'localhost' identified by 'pass';
 $ mysql -uvalbaca -p
@@ -213,3 +215,4 @@ mysql> show tables;
 | transaction    |
 +----------------+
 13 rows in set (0.00 sec)
+```

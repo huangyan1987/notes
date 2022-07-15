@@ -8,15 +8,17 @@ Core is configuration & dependency injection
 Learn Spring
 
 Setup & pre-work:
+```
 $ git clone https://github.com/eugenp/learn-spring.git
 $ cd learn-spring
 $ git checkout module2
-
+```
 Maven:
+```
 $ mvn clean install
 $ mvn clean install -Dmaven.test.skip=true
 $ mvn spring-boot:run
-
+```
 Module 1
 
 Why Spring?
@@ -145,15 +147,16 @@ External configuration
 Runtime, not compile time!
 
 @Value - to inject the values
-@Value("${project.prefix}") // Note, you can type "${}" and use autocomplete within brackets
+`@Value("${project.prefix}")` // Note, you can type "${}" and use autocomplete within brackets
 
 
 Beans can be restricted to a profile using @Profile
 @Profile("dev") - class annotation; default is "default"
 profile is set in application.properties file with spring.profiles.active (it has autocomplete)
 
+```
 2020-11-16 18:30:30.018  INFO 14990 --- [           main] com.baeldung.ls.LsApp                    : The following profiles are active: dev
-
+```
 More property files can be specified using @PropertySource on the configuration classes
 @PropertySource("classpath:additional.properties")
 @Configuration
@@ -181,51 +184,59 @@ Create a single "empty" test that makes sure the Spring is being bootstrapped
 The test config needs to be configured to know what classes to scan for the context
 
 
-/* TestConfig.java defines what classes to scan for tests */
+TestConfig.java defines what classes to scan for tests
+```
 @Configuration
 @ComponentScan("com.baeldung.ls")
 public class TestConfig {
 }
-
+```
 // Now we point our test to config
-@SpringJUnitConfig(classes = TestConfig.class)
+``@SpringJUnitConfig(classes = TestConfig.class)
 
 To specify properties just for testing:
-@TestPropertySource(locations = "classpath:test.properties")
+``@TestPropertySource(locations = "classpath:test.properties")
 
 When running tests, TestProperties override regular Properties (as you would expect)
+
 ---
+
 Boot is auto-configured and intelligently backs off
 It uses a lot of @Conditional annotations to know when to not apply autos, allows config based on conditions
 The Boot beans check if a bean of that class is already defined. If there's already one of that Class, then it backs off.
 
 ---
-Spring in Action, 5th Ed, Spring 5.0
+# Spring in Action, 5th Ed, Spring 5.0
 
+```
 $ mvn clean install spring-boot:run
 # omit clean for faster, spring-boot:start to start in background, spring-boot:stop to stop
 $ gradle bootRun
-
+```
 Couldn't find main:
+```
 pom.xml
 <properties>
         <start-class>com.valbaca.tacos.TacoCloudApplication</start-class>
 </properties>
-
-To generate mvnw and mvnw.cmd: mvn -N wrapper:wrapper
+```
+To generate mvnw and mvnw.cmd: `mvn -N wrapper:wrapper`
 
 Unit tests are now simpler than in the book, just:
 
+```
 import org.junit.jupiter.api.Test; // <-- IMPORTANT
 @SpringBootTest
 public MyTest {
     @Test
     void testThing() {...}
 }
+```
 
 The @Test is important b/c it changed between versions from JUnit4 (org.junit.Test) and JUnit5 (org.junit.jupiter.api.Test)
 
 Dockerfile:
+```
 FROM openjdk:8-jdk-alpine
 ENV SPRING_PROFILES_ACTIVE docker
 VOLUME /tmp
@@ -235,3 +246,4 @@ ENTRYPOINT ["java",\
             "-Djava.security.egd=file:/dev/./urandom",\
             "-jar",\
             "/app.jar"]
+```

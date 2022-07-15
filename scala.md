@@ -1,4 +1,5 @@
-Scala: "skah-lah", "A Better Java", Java++, OO+FP on the JVM
+# Scala: "skah-lah", "A Better Java", 
+Java++, OO+FP on the JVM
 - Basics: https://docs.scala-lang.org/tour/basics.html
 - Cheatsheet: https://docs.scala-lang.org/cheatsheets/index.html
 
@@ -33,6 +34,7 @@ Scala's Ints are int, Floats as float, Booleans as booleans, etc.
 Scala arrays are Java's. Strings are Strings.
 
 Classes:
+```
 Java:
 class MyClass {
     private final int index;
@@ -44,15 +46,17 @@ class MyClass {
     }
     // Getters
 }
-
+```
 Scala:
-class MyClass(index: Int, name: String)
+`class MyClass(index: Int, name: String)`
 
+```
 object MyApp {
     def main(args: Array[String]) = {
         /**/
     }
 }
+```
 
 First tips for reading Scala:
 var defines variables that can be reassigned.
@@ -75,18 +79,19 @@ Or in match-cases it matches everything:
 
 Unit is like Java's void, methods returning Unit are only executed for their side-effects
 Brackets wrap type parameters, so for collections:
+```
     List[String]   // Scala
     List<String>   // Java
-
+```
 Scala has named and default arguments for methods.
 
 Companion objects (which are also singletons) are used for static methods. 
 
 Example def, compared with Java & Clojure:
 Example def, read as "define a method 'from', which given src (is-an Iterable of Es), returns a List of Es..."
-    def from[E](src: Iterable[E]): List[E] = ...
+    `def from[E](src: Iterable[E]): List[E] = ...`
 Java equivalent, read as "public method, return List of E, named from, params are an Iterable of Es, src"
-    public <E> List<E> from(Iterable<E> src) { ... }
+    `public <E> List<E> from(Iterable<E> src) { ... }`
 Clojure equivalent "fn named from, param is src..."
     (defn from [src] ...)
 
@@ -100,7 +105,7 @@ args.foreach((arg: String) => println(arg))
 args.foreach(println)
 for (arg <- args) println(arg)
 
-Tupes: are 1-based, so: tuple._1 for first
+Tuples: are 1-based, so: tuple._1 for first
 
 Maps:
 val m = Map("a" -> "alpha", "b" -> "beta") // The -> syntax creates a tuple of ("a", "alpha")
@@ -409,11 +414,11 @@ Don't forget the = in a def
 Only use == and != for equals. Use eq for reference equality (which is very rare!)
 Scala does NOT have ++ or -- for increment or decrement
 No break keyword for loops (at least not out of the box)
-[Brackets] for types, instead of Java's <Generics> syntax
+`[Brackets] for types, instead of Java's <Generics> syntax`
 void = Unit
 
-===============================================================================
-Advent of Code notes:
+---
+# Advent of Code notes:
 // Read lines from file
 Source.fromFile(filename).getLines()
 
@@ -425,13 +430,14 @@ def repeated: LazyList[Int] = once #::: repeated
 val sums: LazyList[Int] = repeated.scanLeft(0)(_ + _)
 
 
-===============================================================================
-Functional Programming in Scala
+---
+
+# Functional Programming in Scala
 
 curry: taking a function that takes n args, turn it into n fns that each take 1 arg
 uncurry: take a fn that takes 1 arg (which returns another etc) into a single fn that takes n args
 
-currying can help with type inferrence, like with dropWhile
+currying can help with type inference, like with dropWhile
 
 def dropWhile[A](as: List[A])(f: A => Boolean): List[A] = ...
 allows for:
@@ -440,7 +446,7 @@ instead of having to specify the types
   dropWhile(xs, (x: Int) => x < 10)
 
 
-===============================================================================
+---
 
 IntelliJ + Scala tips:
 
@@ -449,7 +455,8 @@ Worksheets are really useful but also a pain when you're also editing the code
 - Close & reopen sheets if they're not seeing latest changes
 
 
-===============================================================================
+---
+
 Akka
 Akka is an Actor-based Scala library, similar to Erlang's actor model
 Actors communicate by sending messages to each other.
@@ -464,6 +471,7 @@ To add Akka to project, add this to the build.sbt
     libraryDependencies +=
       "com.typesafe.akka" % "akka-actor_2.11" % "2.4.20"
 
-===============================================================================
+---
+
 May 2021: coming back to Scala
 

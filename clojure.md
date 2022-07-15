@@ -2,8 +2,10 @@ TODO:
 Notes (from notebook):
 
 only false & nil are falsy
+```
 $ lein new <proj> ; cd proj
 $ lein repl
+```
 
 Help!
 doc         print documentation
@@ -26,19 +28,19 @@ inc     increment or ++
 type    get the :type metadata or class?
 =       equals (strict)
 ==      loose equals, good for numbers 3 & 3.0
-str     to tring, also joins/concats
+str     to string, also joins/concats
 
-Lists: '(1 2 3) = (list 1 2 3) = (cons 1 '(2 3))
+Lists: `'(1 2 3) = (list 1 2 3) = (cons 1 '(2 3))`
 Lists conj/add to the front/head
 (conj '(1 2) 0) => (0 1 2)
 (nth '(10 20 30) 2) => 30
 ('(10 20 30) 2) => 30
 
-Vectors: [1 2 3] = (vector 1 2 3) = (vec (list 1 2 3))
+Vectors: `[1 2 3] = (vector 1 2 3) = (vec (list 1 2 3))`
 Vectors conj/add at the end/tail
-(conj [1 2] 3) => [1 2 3]
-subvec [vec end]            get inner/sub vec, from 0 to `end` 
-subvec [vec start end]      get inner/sub vec, from `start` to `end`
+`(conj [1 2] 3) => [1 2 3]`
+`subvec [vec end]`            get inner/sub vec, from 0 to `end` 
+`subvec [vec start end]`      get inner/sub vec, from `start` to `end`
 
 (xs n)     gets nth elem from xs (just like like nth)
 first   second      return obvious!
@@ -52,18 +54,18 @@ sort        !
 conj        add (where deps on coll)
 disj        remove
 contains?   true if elem in set
-(<set> <elem>)  same as contains?. use set a filter predicate
+`(<set> <elem>)  same as contains?. use set a filter predicate`
 
 
 Sets: #{1 2 3} = (set [1 2 3])
 
 Keywords are like :this
-Keywords globally evaluate exactly only to theirself and allow for fast self evaluation/lookup.
+Keywords globally evaluate exactly only to itself and allow for fast self evaluation/lookup.
 (identical? :a :a) => true
 Keywords are NOT symbols. Keyword
 ::this when namespace qualified
 
-Symbols are like 'this (when quoted) or like (fn [this] this)
+Symbols are like 'this (when quoted) or like `(fn [this] this)`
 Symbols are identifiers that refer to something else, like params, functions, classes, vars etc.
 (identical? 'a 'a) => false
 
@@ -79,13 +81,13 @@ vals    values
 let: (let [var value ...])
 (let [cats 5] (str "I have " cats " cats."))
 Destructuring: works with fn, let, and more...
-(fn [[a b c]] (str c b a))                                  ; given a vector of 3 elems, assigns them variables a b c
-(let [[a & rst] xs] ...)                                    ; puts the rest into rst as a seq
-(let [[first second] :as all] some-var] ...)                ; renames some-var as all
-(let [{height :height weight :weight age :age} person] ...) ; destruct by keyword
-(let [{:keys [height weight age]} person] ...)              ; by keys, more succinctly
+`(fn [[a b c]] (str c b a))`                                  ; given a vector of 3 elems, assigns them variables a b c
+`(let [[a & rst] xs] ...)`                                    ; puts the rest into rst as a seq
+`(let [[first second] :as all] some-var] ...)`                ; renames some-var as all
+`(let [{height :height weight :weight age :age} person] ...)` ; destruct by keyword
+`(let [{:keys [height weight age]} person] ...)`              ; by keys, more succinctly
 
-fn: (fn [x] (+ x 1)) = #(+ % 1)
+fn: `(fn [x] (+ x 1)) = #(+ % 1)`
 %1 or % for first arg. %2 for second, etc.
 
 def: (def cats 5) ; cats = 5
@@ -93,21 +95,23 @@ def: (def cats 5) ; cats = 5
 (type #'cats)              => clojure.lang.Var
 'cats => cats ; the symbol
 (resolve 'cats) => #scratch.core/cats ; the var
-(eval 'inc) => #object[Function] ; the value
+`(eval 'inc) => #object[Function]` ; the value
 (eval 'cats) => 5                ; the value
 
-defn: (defn <name> [args] <body>)
-(def half (fn [number] (/ number 2)))
-(defn half [number] (/ number))
+defn: `(defn <name> [args] <body>)`
+`(def half (fn [number] (/ number 2)))`
+`(defn half [number] (/ number))`
 Multiple arity:
-(defn half ([] 1/2)
-           ([x] (/ x 2)))
+`(defn half ([] 1/2)
+           ([x] (/ x 2)))`
 Use & for var-args in a list:
-(defn varargs [x y & more] ...)
+`(defn varargs [x y & more] ...)`
 Docs are just a string put after the fn name
+```
 (defn launch 
   "blah blah ..."
   [x y] ...)
+```
 
 defn-   private
 meta    to get metadata, (meta #'launch)
@@ -143,11 +147,11 @@ iterate     lazy sequence of x, (f x), (f (f x)), ...
 take        returns first N; (take 10 (iterate inc 0)) => (0 1 2...9). Use w/ infinite seqs
 repeat      [x] => infinite xs or [n x] => xs, n times
 repeatedly  like repeat, but returns inf seq
-range   n => [0,n)
-        n m => [n, m)
-        n m s => [n, m) steps of s
+range   `n => [0,n)`
+        `n m => [n, m)`
+        `n m s => [n, m)` steps of s
 cycle   repeat a sequence (take 5 (cycle [1 2])) => (1 2 1 2 1)
-map-indexed     (map-index <FN INDEX ELEM> SEQ)
+map-indexed     `(map-index <FN INDEX ELEM> SEQ)`
 interleave      riffle together (interleave [:a :b :c] [1 2 3]) => (:a 1 :b 2 :c 3)
 reverse         ! to flip a str: (apply str (reverse "foo"))
 seq     to-sequence, can breakup a str
@@ -178,7 +182,7 @@ mapv    returns vector
 dorun   realizes a lazy seq but returns nil
 partial FN ARGS     given a fn and some (but not enough) args, gives a partial fn
 juxt    FNS         given fns, applies each one and returns a vector with the output of each one:
-    ((juxt filter remove) odd? [1 2 3 4 5]) => [[1 3 5] [2 4]]
+    `((juxt filter remove) odd? [1 2 3 4 5]) => [[1 3 5] [2 4]]`
 
 Macros:
 defmacro `syntax quote ~unquote ~@unquote splice
@@ -324,6 +328,7 @@ Futures & Promises (careful not to deadlock w/ Promises)
 (lowest) Java threads
 
 core.async:
+```
 (def echo-chan (chan))  ; creates a channel
 (go (println (<! echo-chan)))   ; defines the channel action
 (>!! echo-chan "boom!")         ; puts a message on the channel
@@ -337,26 +342,28 @@ Outside a go block, you MUST use >!! <!!
 thread      a lot like a future, but returns a channel
 (let [t (thread "boo")] (<!! t))
 alts! alts!!    make a choice between channels
+```
 
-
+```
 $ lein new PROJ
 $ lein new app PROJ
+```
     doc             documentation
     project.clj     name, versioning deps, license
     resources       images, etc.
     src             code
     test            tests
     target          compiled code, built packages
-$ lein repl
-In repl, prev value is *1, *2 for the one before that, etc.
-If having issues, clear cache: $ rm -rf ~/.lein ~/.m2
+`$ lein repl`
+In repl, prev value is `*1`, `*2` for the one before that, etc.
+If having issues, clear lein and maven cache: `$ rm -rf ~/.lein ~/.m2`
 
 File system     Source code
 slash /         period .
 underscore _    hyphen -
 
 Namespaces:
-Do NOT use :use
+**Do NOT use :use**
 (ns scratch.core)   namespace declaration
 (ns user (:require [scratch.core]))         ; gives access but needs FQNames
 (ns user (:require [scratch.core :as c]))   ; with alias
@@ -369,8 +376,8 @@ inc => clojure.core$inc
 (def foo "abc") => #'scratch.core/foo ; interning a var
 (ns-interns *ns*)   ; get map of interns
 (create-ns 'val.new-ns)
-(ns-name *1) => val.new-ns
-(in-ns 'val.new-ns) ; *creates (if needed) and switches to ns
+(ns-name \*1) => val.new-ns
+(in-ns 'val.new-ns) ; creates (if needed) and switches to ns
 (refer 'val.new-ns :only ['bries]) ; only bring in bries
 (refer 'val.new-ns :exclude ['bries]) ; all except bries
 (refer 'val.new-ns :rename {'bries 'stinky}) ; rename symbol
@@ -397,15 +404,17 @@ Other:
 :require uses :as, :refer, :refer :all, :rename, :reload, :verbose
 
 ; This is what it looks like in source files:
+```
 (ns foo.bar (:require [clojure.string :as cs :refer [join]]
                       [clojure.data.zip :rename {oldx newx
                                                  oldy newy}]))
 (:import [java.util ArrayList HashMap])
+```
 
 See https://8thlight.com/blog/colin-jones/2010/12/05/clojure-libs-and-namespaces-require-use-import-and-ns.html
 
 
-To reload @ REPL:
+⭐️**To reload @ REPL**:
 (require 'your.ns :reload-all)
 
 To reset REPL utils, like doc (but in general, don't use use!)
@@ -635,7 +644,7 @@ Transpose           Ctrl+Alt+T
 Commands to know about (but no good shortcut):
 Interrupt Running Evaluations     // stops infinite loops
 
-:Learning
+## Learning
 http://www.4clojure.com/
 http://clojurescriptkoans.com/
 https://www.codewars.com/?language=clojure
@@ -643,7 +652,7 @@ https://github.com/clojurecademy/clojurecademy
 https://www.braveclojure.com/clojure-for-the-brave-and-true/
 
 
-:References
+## References
 https://clojure.org/ - the mothership
 https://clojure.org/api/cheatsheet - cheatsheet
 https://leiningen.org/ - "the easiest way to use Clojure" must-have
@@ -651,13 +660,13 @@ https://boot-clj.com/ - the other build tool
 https://calva.io/commands-top10/ - Calva, VS Code plugin
 
 
-:Blogs
+## Blogs
 https://grison.me/2020/04/04/starting-with-clojure/
 setup with IntelliJ & VS Code, along with links to other getting-started resources
 https://yogthos.net/ClojureDistilled.html - Clojure Distilled
 https://8thlight.com/blog/colin-jones/2010/12/05/clojure-libs-and-namespaces-require-use-import-and-ns.html - Explains ns, require, import, etc
 
-:Deps
+## Deps
 https://clojure.github.io/index.html - Clojure contribs
 https://github.com/tonsky/uberdeps - packs into an uberjar (part of lein)
 Luminus - clojure web dev made simple (?)
