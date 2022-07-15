@@ -1,6 +1,7 @@
-Java
+# Java
 
-Features, by LTS, at a glance:
+## Java Language Version Features, by LTS, at a glance:
+
 Java 11 Features (since Java 8)
 - Modules aka Project Jigsaw
 - jshell
@@ -54,7 +55,7 @@ var: local-variable type inference
 New release cycle: feature release @ 6mo, update every quarter, and LTS @ 3yrs
 
 Java 11 (fall 2018 LTS):
-methods++ Strings, Files
+more methods Strings, Files
 HTTPClient
 Epsilon: Experimental No-op GC
 
@@ -85,8 +86,6 @@ pattern matching instanceof: if (obj instanceof String s)
 Previews: sealed classes
 
 Java 17 LTS (fall 2021)
-
-
 Possible future features: value types, 64-bit arrays, pattern matching, sealed types, better native interop, virtual threads
 
 Projects:
@@ -112,24 +111,18 @@ net
 text
 time
 
+```
 $ javac # Java Compiler
 -cp  -classpath
 --release <#>
+```
 
-$ java # Java Interpreter
--jar
--cp -classpath
--Dsystem.key=value
--ea -enableassertions
--da -disableassertions
--client # for user apps
--server # for services
--splash:path.gif
-
+```
 $ jar # java archive, program packager
 cf # create jar file
 xf # extract jar
 tfv # list (as table) jar file, verbose
+```
 
 Concurrency:
 Runnable is an interface with run() method
@@ -158,21 +151,25 @@ Period
 
 ---
 
-Effective Java, Nov 2020 re-read:
+## Effective Java, Nov 2020 re-read:
 
 Assume (and auto?)
+```
 import java.util.*;
 import java.util.concurrent.*;
 import java.io.*;
+```
 
 1. Static factory methods
 2. Builders
 3. Enum singleton
 
+```
 public enum Elvis {
     INSTANCE;
     public void leaveBuilding() { ... }
 }
+```
 
 4. Private ctor for noninstantiation
 5. Avoid unnecessary objects. Careful with object pools; JVM is good.
@@ -181,21 +178,21 @@ public enum Elvis {
 
 8. Overriding equals is hard: Reflexive, Symmetric, Transitive, Consistent, non-null.
 Default uses reference-equals.
-Reflexive: x.equals(x) == true
-Symmetric: x.equals(y) == y.equals(x)
-Transitive: x.equals(y) && y.equals(z) => x.equals(z)
-Consistent: same answer always x.equals(y)
-x.equals(null) == false
+- Reflexive: x.equals(x) == true
+- Symmetric: x.equals(y) == y.equals(x)
+- Transitive: x.equals(y) && y.equals(z) => x.equals(z)
+- Consistent: same answer always x.equals(y)
+- x.equals(null) == false
 
 Recipe for equals():
-    0. Use @Override. Only use Object as param type.
+    0. Use @Override. Only use **Object** as param type.
     1. Use == to check reference-equals
     2. Use instanceof to check type
     3. Cast to type (safe now)
     4. Check each significant field f in class against other o
-        (f==null ? o.f == null : f.equals(o.f))
+        `(f==null ? o.f == null : f.equals(o.f))
         OR for faster if often equals
-        (f == o.f || (f != null && f.equals(o.field)))
+        `(f == o.f || (f != null && f.equals(o.field)))
     5. Check symmetry, transitive, and consistent w/ tests
     6. Override hashCode
     7. Don't be clever; only check fields.
@@ -251,40 +248,40 @@ Use actual class hierarchy
 22. Favor static member classes over non-static
 
 23. Don't use raw types
-If you don't know the type, use List<?>
+If you don't know the type, use `List<?>
 
 Terms:
-Parameterized type          List<String>
-Actual type parameter       String
-Generic Type                List<E>
-Formal type parameter       E
-Unbounded wildcard type     List<?>
-Raw type                    List
-Bounded type parameter      <E extends Number>
-Recursive type bound        <T extends Comparable<T>>
-Bounded wildcard type       List<? extends Number>
-Generic method              static <E> List<E> asList(E[] a)
-Type token                  String.class
+Parameterized type          `List<String>
+Actual type parameter       `String
+Generic Type                `List<E>
+Formal type parameter       `E
+Unbounded wildcard type     `List<?>
+Raw type                    `List
+Bounded type parameter      `<E extends Number>
+Recursive type bound        `<T extends Comparable<T>>
+Bounded wildcard type       `List<? extends Number>
+Generic method              `static <E> List<E> asList(E[] a)
+Type token                  `String.class
 
 24. Eliminate uncheck warnings
 
 If you can't, use @SuppressWarnings("unchecked") with a comment
 25. Prefer Lists to arrays
-26. Favor generic types: public class Stack<E>
-27. Favor generic methods: public static <E> Set<E> union(...)
+26. Favor generic types: `public class Stack<E>
+27. Favor generic methods: `public static <E> Set<E> union(...)
 28. Use bounded wildcards to increase flexibility
 PECS: producer-extends, consumer-super
-For T producers, use <? extends T>
+For T producers, use `<? extends T>
     can produce T or extensions/subclasses of T
-For T consumers, use <? super T>
+For T consumers, use `<? super T>
     must consume T or super classes of T
-    Comparable & Comparator are consumers; always use Comparable<? super T>
+    Comparable & Comparator are consumers; always use `Comparable<? super T>
 
 Don't use wildcards in return types.
 
-29. Consider typesafe hetergenous containers
+29. Consider type-safe heterogeneous containers
 
-String.class is type Class<String>
+`String.class` is type `Class<String>`
 
 30. Use enums instead of int constants
 31. Use instance fields instead of ordinals
@@ -294,25 +291,27 @@ Never derive a value associated with an enum from its ordinal; store instance fi
 34. Emulate extensible enums for interfaces
 35. Use annotations over naming patterns
 Example annotation:
+```
 import java.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Test {
 }
-
+```
 To check:
-Class testClass =...
+```Class testClass =...
 for (Method m : testClass.getDeclaredMethods())
     m.isAnnotationPresent(Test.class)
-
+```
 
 For an annotation type w/ param:
-
+```
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface ExceptionTest {
     Class<? extends Exception> value();
 }
+```
 
 36. Use @Override on every overriding method.
 Can skip for implementations of abstract classes, but probably should still do it anyway.
@@ -323,7 +322,7 @@ Marker interfaces have no methods but indicate that some class does something.
 38. Check params for validity (and doc it)
 39. Use defensive copies when needed
     Make the copy, THEN check that the COPY is valid (don't check the originals)
-    Avoids time-of-check/time-of-use TOCTOU attack.
+    Avoids time-of-check/time-of-use (TOCTOU) attack.
 
 40. Design methods carefully
 Tips:
@@ -358,16 +357,16 @@ Use Collection.emptyList
 Each exported class, interface, ctor, method, and field.
 First sentence is summary. Don't use the same summary twice.
 
-{@code your code here}
+`{@code your code here}
 
-<pre>{@code your multi-line code here}</pre>
+`<pre>{@code your multi-line code here}</pre>
 
-{@literal suppresses html, use for < and > and & }
+`{@literal suppresses html, use for < and > and & }
 
 Document type params:
 
-@param <K> the type of keys
-@param <V> the type of values
+`@param <K> the type of keys
+`@param <V> the type of values
 
 Ch8: General Programming (These apply for many other languages!)
 45. Minimize scope of local variables
@@ -375,7 +374,6 @@ Ch8: General Programming (These apply for many other languages!)
 47. Know and use libraries
 
 High:
-java.lang.*
 java.util.*
 java.util.conurrent.*
 
@@ -390,7 +388,7 @@ Unboxing can throw NPE in addition to being inefficient
 50. Avoid strings where other types are more appropriate
 Use numerical or boolean or enums or aggregate types.
 51. Beware performance of string concatenation
-More abstract: be aware of the time-space complexity/cost of operations.
+More abstract/generic tip: be aware of the time-space complexity/cost of operations.
 52. Refer to objects by their interfaces.
 Use List instead of ArrayList
 53. Prefer interfaces to reflection
@@ -403,6 +401,7 @@ Rarely advisable to use for performance.
     1. Don't do it
     2. (For experts) Don't do it yet -- that is, not until you have a perfectly
        clear and unoptimized solution. -M.A. Jackson
+    3. If you must, measure measure measure.
 
 Write good programs rather than fast ones.
 Avoid design decisions that limit performance: APIs, wire-level protocols, & persistent data formats.
@@ -451,9 +450,12 @@ But without synchronize/synchronized, the new values may not be visible to every
 Synchronization is required for reliable communication between threads as well as for mutual exclusion.
 Synchronization has no effect unless both read and write are synchronized.
 
+
+```
 private static boolean stopRequested;
 private static synchronized void requestStop() { stopRequested = true; }
 private static synchronized boolean stopRequested() { return stopRequested;}
+```
 
 For a value that only need communication, but not mutex, you can use volatile.
 volatile ensures the latest written value is read. BUT it doesn't provide any mutex safety.
@@ -470,9 +472,11 @@ Do not call unknown code within sync block
 
 68. Prefer executors and tasks to threads
 
+```
 ExcecutorService executor = Executors.newSingleThreadExecutor();
 executor.execute(runnable);
 executor.shutdown();
+```
 
 CachedThreadPools are good for small programs, but not good for production servers.
 Use FixedThreadPools instead for prod servers.
@@ -485,17 +489,19 @@ avoid wait & notify. Use the ConcurrentX collections.
 For timing, use System.nanoTime over System.currentTimeMillis
 
 Always use the wait-loop to invoke the wait method; never invoke outside a loop:
+```
 synchronized (obj) {
     while (condition) obj.wait(); // Releases lock, and reaquires on wakeup
     // do action
 }
+```
 
 notifyAll should generally be used over notify. If you use notify, ensure liveness.
 There's seldom reason to use wait and notify in code.
 
 70. Doc thread safety
-Immutable is always thread safe, e.g. String, Long, BigInteger
-ThreadSafe are mutable but has sufficient sync, e.g. Random & ConcurrentHashMap
+Immutable is **always** thread safe, e.g. String, Long, BigInteger
+ThreadSafe, mutable but has sufficient sync, e.g. Random & ConcurrentHashMap
 Conditionally thread-safe, need external sync. e.g. Collections.synchronized wrappers
 Not thread-safe, e.g. ArrayList and HashMap
 Thread-hostile, e.g. System.runFinalizersOnExit
@@ -503,19 +509,22 @@ Thread-hostile, e.g. System.runFinalizersOnExit
 71. Use lazy-init judiciously. Prefer normal init.
 
 To break circularity, use sync accessor:
+```
 private Foo foo;
 synchronized Foo getFoo() {
     if (foo == null) foo = newFoo();
     return foo;
 }
-
+```
 For static-fields, init holder class idiom:
+```
 private static class FieldHolder {
     static final FieldType field = computeFieldValue();
 }
 static FieldType getField() { return FieldHolder.field; }
-
+```
 For instance fields, use double-check volatile idiom:
+```
 private volatile FieldType field;
 FieldType getField() {
     FieldType result = field;
@@ -528,7 +537,7 @@ FieldType getField() {
     }
     return result;
 }
-
+```
 72. Don't depend on the thread scheduler
 Threads should not busy-wait.
 Thread.yield has no testable semantic.
@@ -542,7 +551,7 @@ Extensible classes should rarely implement Serializable.
 
 ---
 
-97 Things Every Java Dev...
+## 97 Things Every Java Dev...
 
 Tools in the Java bin/
 
@@ -559,25 +568,27 @@ jconsole & jvisualvm: visual alts to cli tools
 jshell JVM REPL
 
 ---
+## Data Structures
 
 Arrays:
+```
 int[] ints = new int[100];
 int[] digs = new int[] {1,2,3};
-
+```
 Important Arrays methods: binarySearch fill mismatch setAll
 Parallel/Streams: parallelSetAll parallelSort stream
 Misc: compare copyOf copyOfRange equals 
 
 
 Streams, create from:
-Collection: .stream() .parallelStream()
-Array: Array.stream(T[])
-Objects: Stream.of(T...)
-Object+iterate function: Stream.iterate(object, fn)
-Random: Random.ints()
-range: IntStream.range(startInclusive, endExclusive) or rangeClosed(startInclusive, endInclusive)
+Collection: `.stream() .parallelStream()`
+Array: `Array.stream(T[])`
+Objects: `Stream.of(T...)`
+Object+iterate function: `Stream.iterate(object, fn)`
+Random: `Random.ints()`
+range: `IntStream.range(startInclusive, endExclusive) or rangeClosed(startInclusive, endInclusive)`
 
-Back to Collection: stream.collect(Collectors.toList())
+Back to Collection:` stream.collect(Collectors.toList())`
 
 Top stream methods: distinct filter flatMap map reduce forEach sum min max count sorted
 Predicates: allMatch anyMatch noneMatch
@@ -592,6 +603,7 @@ Less used: concat indexOf getBytes lines repeat replace replaceAll substring tri
 
 Queue/Dequeue/PriorityQueue
 
+```
 Queue: <- |||| <- 
      first||||last
       head||||tail
@@ -599,10 +611,12 @@ Queue: <- |||| <-
         add(e) remove() element() // why not just get() ???
     boolean/nullable:
         offer(e) poll() peek()
-
+```
+```
 Stack: <-> ||||
     push(e) pop() peek()
-
+```
+```
 Dequeue:  <-> |||| <->
          first||||last
           head||||tail
@@ -610,10 +624,11 @@ Use as a queue:
     Insert: addLast(e) offerLast(e)
     Remove: removeFirst() pollFirst()
     Examine: getFirst() peekFirst()
-
+```
 ---
 
 Collections static methods:
+```
 binarySearch(list, key)  (list, key, comp)
 copy(listDest, listSrc)
 disjoint(coll1, coll2)
@@ -634,54 +649,56 @@ List singeltonList(o)
 Map singletonMap(k,v)
 sort(list) (list, comp)
 swap(list, i, j)
+```
 
 ---
 
 Collectors:
+```
 people.stream().map.collect(Collectors...);
-
 toList()                     // most common
 toCollection(TreeSet::new)   // specify a particular collection
 summingInt(Employee::getSalary)
 partitioningBy(s -> s.getGrade() > 70) // partition is by boolean Gives Map<Boolean, List<Students>>
 groupingBy
-
 counting()      // count, equal to reducing(0L, e -> 1L, Long::sum)
+```
 
 ---
 
 HackerRank Lessons aka TIL
 
 Array to fixed-size list:
-List<Integer> fixed = Arrays.asList(arr);
+`List<Integer> fixed = Arrays.asList(arr);
 
 Array to flexible list:
-List<Integer> flex = new ArrayList<>(Arrays.asList(arr));
+`List<Integer> flex = new ArrayList<>(Arrays.asList(arr));
 
 List to Object Array:
-T[] arr = list.toArray(new T[0]); // old java uses size instead of 0
+`T[] arr = list.toArray(new T[0]); // old java uses size instead of 0
 
 Converting arrays, like Integer[] to int[]:
-int[] dst = new int[src.length];
-Arrays.setAll(dst, i -> src[i]); // loops i through src and sets dst
+`int[] dst = new int[src.length];
+`Arrays.setAll(dst, i -> src[i]); // loops i through src and sets dst
 
-List<Integer> to primitive Array:
-int[] arr = list.stream().mapToInt(Integer::intValue).toArray();
+`List<Integer>` to primitive Array:
+`int[] arr = list.stream().mapToInt(Integer::intValue).toArray();
 
-Print List<String>:
-System.out.println(String.join(",", list));
+Print `List<String>`:
+`System.out.println(String.join(",", list));
 
-Print List<Integer>:
-list.forEach(System.out::println);
+Print `List<Integer>`:
+`list.forEach(System.out::println);
 
 Don't compare Integers with == 
 It will work for small numbers, but fail on larger
 
 Generate subsets of a set:
+```
 for i in 0..(1<<n)
   for j in 0..n
     add if (i & (1 << j) > 0)
-
+```
 ---
 
 Reading through java.util.concurrent:
@@ -698,18 +715,18 @@ cardinality: counts set bits
 
 ---
 
-Modern (2022) Java 17
+## Modern (2022) Java 17
 
 [HN Thread](https://news.ycombinator.com/item?id=30841581)
 
 [Quarkus](https://quarkus.io/) Reactive microservices
-[StreamEx](https://github.com/amaembo/streamex) enchances Stream
+[StreamEx](https://github.com/amaembo/streamex) enhances Stream
 [OkHttp](https://square.github.io/okhttp/) http client built on [Okio](https://square.github.io/okio/)
-[jhipster](https://www.jhipster.tech/) ???
+[jhipster](https://www.jhipster.tech/) generate front end x backend (Angular/React x Spring/Micronaut/Quarkus/etc) with deployment, CD/CI, and cloud deployment
 
 ---
 
-Java Cookbook notes
+## Java Cookbook notes
 
 Java-specific Software sources:
 - https://projects.apache.org/
@@ -723,7 +740,7 @@ More "general" open source:
 - https://gitlab.com/
 - https://search.maven.org/
 
-For x: use y  (import java.util.*; import java.util.stream.*;)
+For x: use y  `(import java.util.*; import java.util.stream.*;)`
 simple tokenization: StringTokenizer
 continuous int ranges: IntStream.range(start, end) and rangeClosed(start, endInclusive)
 non-continuous int ranges: BitSet
@@ -737,7 +754,7 @@ crypto random: java.security.SecureRandom
 java.util.regex (String s; String regex; Pattern p; Matcher m;)
 simple match check: s.matches(regex) or Pattern.matches(regex, s)
 
-"Pattern is a compiled representation of a regular expressiom"
+"Pattern is a compiled representation of a regular expression"
 create a pattern: Pattern p = Pattern.compile(regex)
 create a matcher: Matcher m = p.matcher(s)
 use the matcher:  boolean b = m.matches()
@@ -760,16 +777,16 @@ Stream (sequence):
 Passing methods: distinct() filter() limit() map() peek() sorted() unsorted()
 Terminating: collect() count() findFirst() max() min() reduce() sum()
 
-I/O:
+### I/O
 Use new Files and Path class: java.nio.file.Files Path
 Old File class: java.io.File // consider it deprecated
 InputStream/OutputStream traditional way to read write from files
 Use Reader and Writer when dealing with text or characters (and not direct bytes)
 
-Get lines of a file: Files::lines() to get a Stream<String>
+Get lines of a file: Files::lines() to get a `Stream<String>`
     Files.lines(Path.of("notes.txt")).forEach(System.out::println)
-Get all lines of a file all in memory: List<String> Files.readAllLines(Path)
-Get all bytes of a file all in memory: byte[] Files.readAllBytes(Path)
+Get all lines of a file all in memory: `List<String> Files.readAllLines(Path)`
+Get all bytes of a file all in memory: `byte[] Files.readAllBytes(Path)`
 Get buffered: Files.newBufferedReader() newBufferedWriter
 
 Old way: BufferedReader is = new BufferedReader(new FileReader(fileName))
@@ -784,27 +801,34 @@ To get files packaged within your source code, use getClass().getResource("file.
 simple/rigid/limited....................complex/flexible/powerful
 StringTokenizer         Scanner         regex
 
+```
 try (Scanner sc = new Scanner(s)) {
     int dayOfMonth = sc.nextInt();
     String month = sc.next();
     int year = sc.nextInt();
 }
+```
 
 Scan has "hasX" and "nextX" methods for all core types (boolean, int, float, etc) and BigInteger and BigDecimal.
 has() and hasNext() each either take a string or regex Pattern
 
 Files and Path:
 Path is a string that is potentially a Files object
+```
     Path p = Path.of(s);
     Path created = Files.createFile(p);
-    OR
+```
+OR
+```
     Path createdFolder = Files.createDirectory(p);
+```
 
 Files can be renamed, moved, deleted, temp files createTempFile()
 For temp files, probably want to call tmp.toFile().deleteOnExit()
 List files: Files.list(Path.of(".")).forEach(println)
 
 java.nio.file.FileWatchService to watch for file changes
+```
 WatchService watcher = FileSystems.getDefault().newWatchService()
 path.register(watcher, new Kind<?>[] {ENTRY_CREATE, ENTRY_MODIFY});
 while (!done) {
@@ -813,8 +837,8 @@ while (!done) {
         // e.kind() e.context()
     }
 }
-
-Safe saving files:
+```
+Safe saving files (this applies to nearly any language tbh)
 1. Create temp file to write to on the same disk, with deleteOnExit(true)
 2. Write to #1
 3. Delete backup file from #4 (if exists, first time it won't)
@@ -827,40 +851,52 @@ Safe saving files:
 4. mv file file.bk
 5. mv file.tmp file
 
-Network Client:
+### Network Client
 Java 11 has java.net.http.HttpClient (old stuff is in java.net, like URLConnection)
 
+```
 HttpClient client = HttpClient.newBuilder()...
 HttpRequest req = HttpRequest.newBuilder(URI.create(url + URLEncoder.encode(keyword)))
     .header(key, val)
     .GET()
     .build();
+```
 
-// Sync
+Sync
+```
 HttpResponse<String> res = client.send(req, BodyHandlers.ofString())
 if (resp.statusCode() == 200) {
     println(resp.body())
 }
+```
 
-// Async
+Async
+```
 client.sendAsync(req, BodyHandlers.ofString())
     .thenApply(HttpResponse::body)
     .thenAccept(println)
     .join()
+```
 
 TCP/IP Sockets, java.net.Socket
+```
 try(Socket sock = new Socket("localhost", 8080)) {
     println("connected")
 }
+```
 
 Internet addresses: java.net.InetAddress
+```
 InetAddress.getByName(hostname).getHostAddress()
 InetAddress.getByName(ipNumber).getHostName()
 InetAddress.getLocalHost()
+```
 
-Inet6Address for IPv6
+Use Inet6Address for IPv6
 
 Reading and writing text to sockets:
+```
 new BufferedReader(new InputStreamReader(sock.getInputStream()))
 new PrintWriter(sock.getOutputStream(), /*autoflush*/ true);
 
+```
