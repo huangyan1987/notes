@@ -38,10 +38,11 @@ Why not...
 - Scala? Decrease in readability, implicits, rough compatiability, less support, learning curve
 - Clojure? Major paradigm shift, steep learning curve, poor IDE support, runtime = slow
 
+```
 fun main(args: Array<String>): Unit {
     TODO()
 }
-
+```
 or just
 fun main() {
     TODO()
@@ -54,6 +55,7 @@ when(foo) {
 }
 
 Example of using when to simplify if-then chain:
+```
 data class MyDate(val year: Int, val month: Int, val dayOfMonth: Int) : Comparable<MyDate> {
     override fun compareTo(other: MyDate): Int = when {
         year != other.year -> year - other.year
@@ -61,7 +63,7 @@ data class MyDate(val year: Int, val month: Int, val dayOfMonth: Int) : Comparab
         else -> dayOfMonth - other.dayOfMonth
     }
 }
-
+```
 `in` is an operator for ranges and collections
 x in xs
 y in 0..100         // ranges INclude last, shortcut for 0.rangeTo(100)
@@ -92,13 +94,13 @@ s.ifBlank { "Default" }
 Collections https://kotlinlang.org/docs/collections-overview.html#collection
 
 All mutable versions are prefixed with Mutable
-Collection<T> vs MutableCollection<T>
+`Collection<T> vs MutableCollection<T>`
 
 Collections have .joinToString
 joinToString is very flexible
 
 empty collections: emptyList emptySet emptyMap but need their type specified
-val empty = emptyList<String>()
+`val empty = emptyList<String>()`
 
 Methods common across Lists & Sets (and Sequences??)
 toList toMutableList toSet toSequence
@@ -169,9 +171,10 @@ fun Shop.customerNameToCityMap(): Map<String, City> =
         customers.associate { it.name to it.city }
 
 // Build a map that stores the customers living in a given city
+```
 fun Shop.groupCustomersByCity(): Map<City, List<Customer>> =
         customers.groupBy { it.city }
-
+```
 for ((k, v) in map) { ... }
 
 speaking of for-loops:
@@ -278,12 +281,14 @@ AutoCloseable+use (just like Java's try-with resources):
 reader().use {reader -> ... }
 
 Generic functions:
+```
 //  public final class Gson {
 //     ...
 //     public <T> T fromJson(JsonElement json, Class<T> classOfT) throws JsonSyntaxException {
 //     ...
 
 inline fun <reified T: Any> Gson.fromJson(json: JsonElement): T = this.fromJson(json, T::class.java)
+```
 
 Use TODO() to mark code as unimplemented
 
@@ -293,7 +298,7 @@ import java.util.Random as JRandom
 
 Operator overloading: https://kotlinlang.org/docs/operator-overloading.html
 To display all operators:
-operator fun <Ctrl-Space>
+operator fun `<Ctrl-Space>`
 
 Define your own infix operators:
 infix fun foo(...) {...}

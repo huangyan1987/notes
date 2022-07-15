@@ -6,7 +6,8 @@ Things that are different between Java and Kotlin.
 
 Many of these are examples of Kotlin being a "better" Java by having more sane or safer defaults.
 
-[Item]: <Java> vs <Kotlin>
+`[Item]: <Java> vs <Kotlin>`
+
 visibility: package-private vs public
     In Java, the default visibility is package-private. This is practically never used and is a bad default.
     In Kotlin, the visibility is public by default. Options: private protected internal

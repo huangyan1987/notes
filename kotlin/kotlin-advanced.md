@@ -28,6 +28,7 @@ Then:
 
 # Generics
 
+```
 fun <T> gFunction(arg: T): T = arg
 
 class GClass<T>(val x: T) {
@@ -56,9 +57,11 @@ class Concrete : GInterface<String> {
     override fun f(): String = "f()"
 
 }
+```
 
 `reified` also lets us get around Type erasure!
 
+```
 fun <T: Any> a(kClass: KClass<T>) {
     println(kClass)
 }
@@ -81,9 +84,11 @@ fun main() {
     check<String>("asdf")
     check<String>(123)
 }
+```
 
 This example also shows how lambdas work
 
+```
 fun <E, C: MutableCollection<E>> Collection<E>.partitionTo(a: C, b: C, pred: (E) -> Boolean): Pair<C, C> {
     for (e in this) {
         if (pred(e)) {
@@ -101,9 +106,11 @@ fun partitionWordsAndLines() {
     check(words == listOf("a", "c"))
     check(lines == listOf("a b", "d e"))
 }
+```
 
 # Custom Delegates
 
+```
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -120,10 +127,12 @@ class EffectiveDate<R> : ReadWriteProperty<R, MyDate> {
         timeInMillis = value.toMillis()
     }
 }
+```
 
 # Builders
 
- import java.util.HashMap
+ ```
+import java.util.HashMap
 
 fun <K,V> buildMutableMap(build: HashMap<K, V>.() -> Unit): Map<K, V> {
     val map = HashMap<K, V>()
@@ -139,25 +148,30 @@ fun usage(): Map<Int, String> {
         }
     }
 }
+```
 
 # Scope functions: let run with apply also
 
 Scope functions execute a block of code "on" an object. No new functionality, just added readability.
 
 Without scope function, repeat the variable name:
+```
 val alice = Person("Alice", 20, "Amsterdam")
 println(alice)
 alice.moveTo("London")
 alice.incrementAge()
 println(alice)
+```
 
 With scope function:
+```
 Person("Alice", 20, "Amsterdam").let {
     println(it)
     it.moveTo("London")
     it.incrementAge()
     println(it)
 }
+```
 
 Function, Object reference, Return value, extension function?
 let, it, result, yes
