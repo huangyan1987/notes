@@ -13,6 +13,7 @@ npm i -D @types/node nodemon rimraf typescript prettier eslint @typescript-eslin
 mkdir src && touch src/index.ts
 touch tsconfig.json .prettierrc .eslintrc.js .editorconfig .gitignore
 ```
+
 To import Node components:
 `import * as os from 'os';
 

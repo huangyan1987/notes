@@ -1,0 +1,24 @@
+// My personal preferred Prettier configuration
+// but removing it from my VS Code for now to follow conventions over my own taste
+// storing it here for whatever reason
+
+// "prettier.semi": false,
+// "prettier.trailingComma": "none",
+// "prettier.arrowParens": "avoid",
+// "prettier.singleQuote": true,
+// "prettier.quoteProps": "consistent",
+
+// .prettierrc (with defaults)
+{
+    "semi": false,
+    "trailingComma": "none", // "es5"
+    "arrowParens": "avoid", // "always"
+    "singleQuote": true,
+    "quoteProps": "consistent"
+}
+
+// Better: consistent "strings" and (arrow) => fns, but still avoiding semicolons
+{
+    "semi": false, // true
+    "trailingComma": "none", // "es5"
+}
